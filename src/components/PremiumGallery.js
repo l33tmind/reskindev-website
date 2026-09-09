@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Lock, Unlock, Image as ImageIcon } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import toast from "react-hot-toast";
 
 export default function PremiumGallery({ images, unlockPrice }) {
   const { user } = useAuth();
@@ -12,7 +13,7 @@ export default function PremiumGallery({ images, unlockPrice }) {
   if (!images || images.length === 0) return null;
 
   const handleUnlock = async () => {
-    if (!user) return alert("Please sign in to unlock premium content.");
+    if (!user) { toast.error("Please sign in to unlock premium content."); return; }
     
     setUnlocking(true);
     // In a real app, this would trigger a payment modal or debit tokens.
@@ -20,7 +21,7 @@ export default function PremiumGallery({ images, unlockPrice }) {
     setTimeout(() => {
       setUnlocked(true);
       setUnlocking(false);
-      alert("Gallery Unlocked successfully!");
+      toast.success("Gallery Unlocked successfully!");
     }, 1000);
   };
 

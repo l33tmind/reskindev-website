@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import toast from "react-hot-toast";
 import Link from "next/link";
 
 export default function OrderPage({ params }) {
@@ -78,11 +79,11 @@ export default function OrderPage({ params }) {
   const handleOrder = async (e) => {
     e.preventDefault();
     if (!user) {
-      alert("Please Sign In first to place an order.");
+      toast.error("Please Sign In first to place an order.");
       return;
     }
     if (!requirements.trim()) {
-      alert("Please provide order requirements.");
+      toast.error("Please provide order requirements.");
       return;
     }
 
@@ -115,7 +116,7 @@ export default function OrderPage({ params }) {
       setSuccess(true);
     } catch (error) {
       console.error("Order failed:", error);
-      alert("Failed to place order. Try again.");
+      toast.error("Failed to place order. Try again.");
     }
     setSubmitting(false);
   };

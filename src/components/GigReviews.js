@@ -5,6 +5,7 @@ import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { Star } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function GigReviews({ gigId }) {
   const { user } = useAuth();
@@ -26,8 +27,8 @@ export default function GigReviews({ gigId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!user) return alert("Please login to submit a review.");
-    if (!comment.trim()) return alert("Please enter a comment.");
+    if (!user) { toast.error("Please login to submit a review."); return; }
+    if (!comment.trim()) { toast.error("Please enter a comment."); return; }
 
     setSubmitting(true);
     try {
@@ -41,9 +42,10 @@ export default function GigReviews({ gigId }) {
       });
       setComment("");
       setRating(5);
+      toast.success("Review submitted successfully!");
     } catch (error) {
       console.error("Error submitting review:", error);
-      alert("Failed to submit review.");
+      toast.error("Failed to submit review.");
     }
     setSubmitting(false);
   };

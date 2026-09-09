@@ -3,7 +3,8 @@ import { db } from "@/lib/firebase";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import PricingCard from "@/components/PricingCard";
-import { ArrowLeft, Heart, MessageCircle } from "lucide-react";
+import { ArrowLeft, Heart, MessageCircle, Share2 } from "lucide-react";
+import toast from "react-hot-toast";
 import SaveButton from "@/components/SaveButton";
 import VideoGallery from "@/components/VideoGallery";
 import GigReviews from "@/components/GigReviews";
@@ -81,7 +82,17 @@ export default async function GigDetail({ params }) {
               {gig.title}
             </h1>
           </div>
-          <SaveButton gigId={id} />
+                      <button 
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                toast.success("Link copied to clipboard!");
+              }}
+              className="p-2 bg-white rounded-full border border-gray-200 hover:bg-gray-50 transition-colors shadow-sm text-gray-500 hover:text-[#00C6A2]"
+              title="Share Service"
+            >
+              <Share2 size={20} />
+            </button>
+            <SaveButton gigId={id} />
         </div>
         
         <p className="text-gray-500 text-sm mb-8">Review gig features, previews, and select your custom package</p>
