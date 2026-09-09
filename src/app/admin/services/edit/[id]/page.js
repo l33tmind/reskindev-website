@@ -1,0 +1,352 @@
+"use client";
+
+import { useEffect, useState, use } from "react";
+import { doc, getDoc, setDoc, addDoc, collection } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, Save, Plus, Trash2, Video } from "lucide-react";
+import Link from "next/link";
+
+const extractYouTubeId = (url) => {
+  if (!url) return null;
+  const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+  return match ? match[1] : null;
+};
+
+export default function EditService({ params }) {
+  const router = useRouter();
+  const resolvedParams = use(params);
+  const isNew = resolvedParams.id === "new";
+
+  const [loading, setLoading] = useState(!isNew);
+  const [saving, setSaving] = useState(false);
+  
+  const [service, setService] = useState({
+    title: "",
+    description: "",
+    imageUrl: "",
+    youtubeUrl: "",
+    youtubeUrls: [""],
+    category: "Service",
+    masterFeatures: [],
+    packages: [
+      { name: "Basic", price: 0, description: "", deliveryDays: 3, featureChecks: [] },
+      { name: "Standard", price: 0, description: "", deliveryDays: 5, featureChecks: [] },
+      { name: "Premium", price: 0, description: "", deliveryDays: 7, featureChecks: [] }
+    ]
+  });
+
+  useEffect(() => {
+    if (!isNew) {
+      async function fetchService() {
+        try {
+          const docSnap = await getDoc(doc(db, "services", resolvedParams.id));
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.youtubeUrl && (!data.youtubeUrls || data.youtubeUrls.length === 0)) {
+              data.youtubeUrls = [data.youtubeUrl];
+            } else if (!data.youtubeUrls) {
+              data.youtubeUrls = [""];
+            }
+            if (!data.packages || data.packages.length === 0) {
+              data.packages = [
+                { name: "Basic", price: 0, description: "", deliveryDays: 3, featureChecks: [] },
+                { name: "Standard", price: 0, description: "", deliveryDays: 5, featureChecks: [] },
+                { name: "Premium", price: 0, description: "", deliveryDays: 7, featureChecks: [] }
+              ];
+            }
+            if (!data.masterFeatures) data.masterFeatures = [];
+            
+            // Ensure featureChecks arrays match masterFeatures length
+            data.packages.forEach(pkg => {
+              if (!pkg.featureChecks) pkg.featureChecks = [];
+              while (pkg.featureChecks.length < data.masterFeatures.length) {
+                pkg.featureChecks.push(false);
+              }
+            });
+
+            setService(data);
+          }
+        } catch (e) {
+          console.error("Error fetching service:", e);
+        }
+        setLoading(false);
+      }
+      fetchService();
+    }
+  }, [isNew, resolvedParams.id]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setService(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleYoutubeChange = (index, value) => {
+    setService(prev => {
+      const newUrls = [...(prev.youtubeUrls || [])];
+      newUrls[index] = value;
+      return { ...prev, youtubeUrls: newUrls };
+    });
+  };
+  const addYoutubeUrl = () => {
+    setService(prev => ({ ...prev, youtubeUrls: [...(prev.youtubeUrls || []), ""] }));
+  };
+  const removeYoutubeUrl = (index) => {
+    setService(prev => {
+      const newUrls = (prev.youtubeUrls || []).filter((_, i) => i !== index);
+      return { ...prev, youtubeUrls: newUrls.length ? newUrls : [""] };
+    });
+  };
+
+  const handlePackageChange = (index, field, value) => {
+    const newPackages = [...service.packages];
+    if (field === "price" || field === "deliveryDays") {
+      newPackages[index][field] = Number(value);
+    } else {
+      newPackages[index][field] = value;
+    }
+    setService(prev => ({ ...prev, packages: newPackages }));
+  };
+
+  const toggleFeatureCheck = (pkgIndex, featureIndex) => {
+    const newPackages = [...service.packages];
+    const currentVal = newPackages[pkgIndex].featureChecks[featureIndex] || false;
+    newPackages[pkgIndex].featureChecks[featureIndex] = !currentVal;
+    setService(prev => ({ ...prev, packages: newPackages }));
+  };
+
+  const addMasterFeature = () => {
+    setService(prev => {
+      const newFeatures = [...prev.masterFeatures, "New Feature"];
+      const newPackages = prev.packages.map(p => ({
+        ...p,
+        featureChecks: [...(p.featureChecks || []), false]
+      }));
+      return { ...prev, masterFeatures: newFeatures, packages: newPackages };
+    });
+  };
+
+  const updateMasterFeature = (index, value) => {
+    const newFeatures = [...service.masterFeatures];
+    newFeatures[index] = value;
+    setService(prev => ({ ...prev, masterFeatures: newFeatures }));
+  };
+
+  const removeMasterFeature = (index) => {
+    setService(prev => {
+      const newFeatures = prev.masterFeatures.filter((_, i) => i !== index);
+      const newPackages = prev.packages.map(p => {
+        const newChecks = [...(p.featureChecks || [])];
+        newChecks.splice(index, 1);
+        return { ...p, featureChecks: newChecks };
+      });
+      return { ...prev, masterFeatures: newFeatures, packages: newPackages };
+    });
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      if (isNew) {
+        await addDoc(collection(db, "services"), service);
+      } else {
+        await setDoc(doc(db, "services", resolvedParams.id), service, { merge: true });
+      }
+      router.push("/admin/services");
+    } catch (e) {
+      console.error(e);
+      alert("Error saving service");
+    }
+    setSaving(false);
+  };
+
+  const validYtIds = (service.youtubeUrls || []).map(extractYouTubeId).filter(Boolean);
+
+  if (loading) return <div className="p-10 text-center">Loading service details...</div>;
+
+  return (
+    <div className="max-w-5xl mx-auto pb-20">
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <Link href="/admin/services" className="p-2 bg-white rounded-full border border-gray-200 hover:bg-gray-50">
+            <ArrowLeft size={20} />
+          </Link>
+          <h1 className="text-3xl font-extrabold text-gray-900">
+            {isNew ? "Add New Service" : "Edit Service"}
+          </h1>
+        </div>
+        <button 
+          onClick={handleSave}
+          disabled={saving}
+          className="bg-[#00C6A2] hover:bg-[#00b08f] text-white px-8 py-3 rounded-full font-bold flex items-center gap-2 shadow-md disabled:opacity-50"
+        >
+          <Save size={18} /> {saving ? "Saving..." : "Save Service"}
+        </button>
+      </div>
+
+      <div className="space-y-8">
+        {/* Basic Info & Thumbnail Preview */}
+        <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm flex flex-col md:flex-row gap-8">
+          <div className="flex-1 space-y-4">
+            <h2 className="text-xl font-bold text-gray-900 mb-6">Basic Information</h2>
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Gig Title</label>
+              <input type="text" name="title" value={service.title} onChange={handleChange} className="w-full border border-gray-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-[#00C6A2]" placeholder="I will do..." />
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-2">Description (HTML allowed)</label>
+              <textarea name="description" value={service.description} onChange={handleChange} rows="5" className="w-full border border-gray-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-[#00C6A2]" placeholder="Describe your service..." />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="md:col-span-2">
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-sm font-bold text-gray-700">YouTube Video URLs</label>
+                  <button onClick={addYoutubeUrl} className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded hover:bg-blue-100 flex items-center gap-1">
+                    <Plus size={14} /> Add Video
+                  </button>
+                </div>
+                <div className="space-y-3">
+                  {(service.youtubeUrls || []).map((url, idx) => (
+                    <div key={idx} className="flex items-center gap-2 relative">
+                      <div className="relative flex-1">
+                        <Video size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                        <input type="text" value={url} onChange={(e) => handleYoutubeChange(idx, e.target.value)} className="w-full pl-10 border border-gray-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-[#00C6A2]" placeholder="https://youtu.be/..." />
+                      </div>
+                      <button onClick={() => removeYoutubeUrl(idx)} className="text-red-400 hover:text-red-600 p-2">
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">Fallback Image URL (Optional)</label>
+                <input type="text" name="imageUrl" value={service.imageUrl} onChange={handleChange} className="w-full border border-gray-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-[#00C6A2]" placeholder="https://..." />
+              </div>
+            </div>
+          </div>
+          
+          {/* Thumbnail Preview Area */}
+          <div className="w-full md:w-72 flex flex-col items-center">
+            <label className="block text-sm font-bold text-gray-700 mb-2 w-full text-center">Thumbnail Previews</label>
+            <div className="w-full flex flex-col gap-3">
+              {validYtIds.length > 0 ? (
+                validYtIds.map((id, idx) => (
+                  <div key={idx} className="w-full aspect-video bg-gray-100 rounded-xl border border-gray-200 overflow-hidden relative shadow-sm">
+                    <img src={`https://img.youtube.com/vi/${id}/mqdefault.jpg`} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
+                    <div className="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                      VID {idx + 1}
+                    </div>
+                  </div>
+                ))
+              ) : service.imageUrl ? (
+                <div className="w-full aspect-video bg-gray-100 rounded-xl border border-gray-200 overflow-hidden relative shadow-sm">
+                  <img src={service.imageUrl} alt="Fallback Preview" className="w-full h-full object-cover" />
+                  <div className="absolute top-2 right-2 bg-blue-600 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                    IMAGE
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full aspect-video bg-gray-50 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400">
+                  <Video size={32} className="mb-2 opacity-50" />
+                  <span className="text-xs">No Media</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Master Features */}
+        <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Gig Features (What's Included)</h2>
+            <button onClick={addMasterFeature} className="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 hover:bg-blue-100 transition-colors">
+              <Plus size={16} /> Add Feature
+            </button>
+          </div>
+          
+          {service.masterFeatures.length === 0 ? (
+            <div className="text-gray-400 text-sm italic text-center py-4 border-2 border-dashed rounded-xl">No features added yet. Click "Add Feature" to create the checklist.</div>
+          ) : (
+            <div className="space-y-3">
+              {service.masterFeatures.map((feat, idx) => (
+                <div key={idx} className="flex items-center gap-3">
+                  <div className="bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center font-bold text-gray-500 text-xs">{idx + 1}</div>
+                  <input 
+                    type="text" 
+                    value={feat}
+                    onChange={(e) => updateMasterFeature(idx, e.target.value)}
+                    className="flex-1 border border-gray-200 rounded-lg p-2.5 outline-none focus:border-[#00C6A2]"
+                  />
+                  <button onClick={() => removeMasterFeature(idx)} className="text-red-400 hover:text-red-600 p-2">
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Packages Configuration */}
+        <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
+          <h2 className="text-xl font-bold text-gray-900 mb-6">Configure Packages</h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {service.packages.map((pkg, pIndex) => (
+              <div key={pkg.name} className="border border-gray-200 rounded-xl bg-gray-50 overflow-hidden flex flex-col">
+                <div className={`p-4 text-center font-black text-lg text-white ${
+                  pkg.name === 'Basic' ? 'bg-slate-700' : pkg.name === 'Standard' ? 'bg-[#00C6A2]' : 'bg-purple-600'
+                }`}>
+                  {pkg.name} Package
+                </div>
+                
+                <div className="p-5 space-y-4 flex-1">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Price ($)</label>
+                    <input type="number" value={pkg.price} onChange={(e) => handlePackageChange(pIndex, "price", e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-1 focus:ring-[#00C6A2]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Delivery Days</label>
+                    <input type="number" value={pkg.deliveryDays} onChange={(e) => handlePackageChange(pIndex, "deliveryDays", e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-1 focus:ring-[#00C6A2]" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Description</label>
+                    <textarea value={pkg.description} onChange={(e) => handlePackageChange(pIndex, "description", e.target.value)} rows="3" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-1 focus:ring-[#00C6A2] text-sm" />
+                  </div>
+                  
+                  {/* Feature Checkboxes for this Package */}
+                  {service.masterFeatures.length > 0 && (
+                    <div className="mt-6 pt-6 border-t border-gray-200">
+                      <label className="block text-xs font-bold text-gray-700 mb-3 uppercase tracking-wider">Features Included:</label>
+                      <div className="space-y-2">
+                        {service.masterFeatures.map((feat, fIndex) => {
+                          const isChecked = pkg.featureChecks && pkg.featureChecks[fIndex];
+                          return (
+                            <label key={fIndex} className="flex items-center gap-3 cursor-pointer group">
+                              <div className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${
+                                isChecked ? 'bg-[#00C6A2] border-[#00C6A2]' : 'bg-white border-gray-300 group-hover:border-gray-400'
+                              }`}>
+                                {isChecked && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
+                              </div>
+                              <input 
+                                type="checkbox" 
+                                className="hidden"
+                                checked={!!isChecked}
+                                onChange={() => toggleFeatureCheck(pIndex, fIndex)}
+                              />
+                              <span className={`text-sm ${isChecked ? 'text-gray-900 font-semibold' : 'text-gray-500'}`}>{feat || "Unnamed Feature"}</span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
