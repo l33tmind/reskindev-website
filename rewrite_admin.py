@@ -1,4 +1,8 @@
+with open('src/app/admin/services/edit/[id]/page.js', 'r') as f:
+    content = f.read()
 
+# I will write a completely new React component for the Admin Edit page to match the UI precisely.
+new_component = """
 "use client";
 
 import { useEffect, useState, use } from "react";
@@ -10,7 +14,7 @@ import toast from "react-hot-toast";
 
 const extractYouTubeId = (url) => {
   if (!url) return null;
-  const match = url.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/i);
+  const match = url.match(/(?:youtube\\.com\\/(?:[^/]+\\/.+\\/|(?:v|e(?:mbed)?)\\/|.*[?&]v=)|youtu\\.be\\/)([^"&?/\\s]{11})/i);
   return match ? match[1] : null;
 };
 
@@ -400,3 +404,7 @@ export default function EditService({ params }) {
     </div>
   );
 }
+"""
+
+with open('src/app/admin/services/edit/[id]/page.js', 'w') as f:
+    f.write(new_component)
