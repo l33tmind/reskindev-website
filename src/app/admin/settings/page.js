@@ -45,15 +45,15 @@ export default function AdminSettings() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Settings</h1>
+      <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-8">Settings</h1>
 
       {/* Hero Section Settings */}
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 mb-8">
-        <h2 className="text-xl font-bold text-gray-800 mb-6 border-b border-gray-100 pb-4">Hero Section Settings</h2>
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 shadow-sm p-8 mb-8">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-6 border-b border-gray-100 pb-4">Hero Section Settings</h2>
         
         <div className="space-y-6">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Main Title</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Main Title</label>
             <input 
               type="text" 
               name="hero_title"
@@ -63,7 +63,7 @@ export default function AdminSettings() {
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Description</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Description</label>
             <textarea 
               name="hero_description"
               rows="3"
@@ -73,7 +73,7 @@ export default function AdminSettings() {
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">YouTube Video URL</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">YouTube Video URL</label>
             <input 
               type="text" 
               name="youtube_url"
@@ -83,7 +83,7 @@ export default function AdminSettings() {
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">WhatsApp Number</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">WhatsApp Number</label>
             <input 
               type="text" 
               name="whatsappNumber"

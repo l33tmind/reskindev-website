@@ -156,18 +156,18 @@ export default function EditService({ params }) {
     setSaving(false);
   };
 
-  if (loading) return <div className="p-10 text-center text-gray-500">Loading service details...</div>;
+  if (loading) return <div className="p-10 text-center text-gray-500 dark:text-gray-400">Loading service details...</div>;
 
   return (
-    <div className="max-w-4xl mx-auto pb-20 bg-gray-50 min-h-screen">
+    <div className="max-w-4xl mx-auto pb-20 bg-gray-50 dark:bg-gray-950 min-h-screen">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-20 px-8 py-4 flex items-center justify-between shadow-sm">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 sticky top-0 z-20 px-8 py-4 flex items-center justify-between shadow-sm">
         <div>
-          <h1 className="text-2xl font-black text-gray-900">Edit Gig Details</h1>
-          <p className="text-gray-500 text-sm">Modify service price, preview media, and description text</p>
+          <h1 className="text-2xl font-black text-gray-900 dark:text-white">Edit Gig Details</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">Modify service price, preview media, and description text</p>
         </div>
         <div className="flex gap-4">
-          <button onClick={() => router.push("/admin/services")} className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-bold text-sm flex items-center transition-colors">
+          <button onClick={() => router.push("/admin/services")} className="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-bold text-sm flex items-center transition-colors">
             <ArrowLeft size={16} className="mr-2" /> Back to Dashboard
           </button>
           <button onClick={handleSave} disabled={saving} className="px-6 py-2 bg-[#00C6A2] hover:bg-[#00b08f] text-white rounded-lg font-bold text-sm transition-colors">
@@ -179,35 +179,35 @@ export default function EditService({ params }) {
       <div className="p-8 space-y-8">
         
         {/* Basic Info */}
-        <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Basic Information</h2>
+        <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-200 shadow-sm">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Basic Information</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-gray-700 mb-2">Gig Title</label>
+              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Gig Title</label>
               <input type="text" name="title" value={service.title} onChange={handleChange} className="w-full border border-gray-300 rounded-xl p-3 outline-none focus:border-gray-900" placeholder="I will do..." />
             </div>
           </div>
         </div>
 
         {/* Video / Image Gallery */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 shadow-sm">
           <div className="p-6 border-b border-gray-100 flex justify-between items-center">
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Video / Image Gallery</h2>
-              <p className="text-xs text-gray-500 mt-1">Paste a YouTube link OR image URL. YouTube thumbnails will auto-generate.</p>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Video / Image Gallery</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Paste a YouTube link OR image URL. YouTube thumbnails will auto-generate.</p>
             </div>
             <button onClick={addYoutubeUrl} className="bg-[#1C2C26] hover:bg-[#2A4038] text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors">
               <Plus size={16} /> Add Video / Image
             </button>
           </div>
           
-          <div className="p-6 space-y-6 bg-gray-50/50 rounded-b-2xl">
+          <div className="p-6 space-y-6 bg-gray-50 dark:bg-gray-950/50 rounded-b-2xl">
             {(service.youtubeUrls || []).map((url, idx) => {
               const ytId = extractYouTubeId(url);
               const previewImage = ytId ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` : url;
               
               return (
-                <div key={idx} className="bg-white border border-red-200 rounded-xl p-4 shadow-sm relative overflow-hidden">
+                <div key={idx} className="bg-white dark:bg-gray-900 border border-red-200 rounded-xl p-4 shadow-sm relative overflow-hidden">
                   <div className="flex gap-4 items-start">
                     <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0 mt-1">
                       {idx + 1}
@@ -237,18 +237,18 @@ export default function EditService({ params }) {
                       
                       {/* Upload Image Alternative Button (Mock) */}
                       {!ytId && (
-                        <div className="flex items-center text-xs font-bold text-gray-700 cursor-pointer hover:text-black">
+                        <div className="flex items-center text-xs font-bold text-gray-700 dark:text-gray-300 cursor-pointer hover:text-black">
                           <ImageIcon size={14} className="mr-2" /> Upload Image
                         </div>
                       )}
 
                       {/* Large Thumbnail Preview */}
                       {previewImage && (
-                        <div className="w-full aspect-[21/9] bg-gray-100 rounded-xl overflow-hidden relative border border-gray-200 group">
+                        <div className="w-full aspect-[21/9] bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden relative border border-gray-200 group">
                           <img src={previewImage} alt={`Preview ${idx+1}`} className="w-full h-full object-cover" />
                           {ytId && (
                             <div className="absolute inset-0 bg-black/10 flex items-center justify-center group-hover:bg-black/20 transition-colors">
-                              <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
+                              <div className="w-12 h-12 bg-white dark:bg-gray-900 rounded-full flex items-center justify-center shadow-lg">
                                 <Play size={20} className="text-black fill-black ml-1" />
                               </div>
                             </div>
@@ -264,40 +264,40 @@ export default function EditService({ params }) {
         </div>
 
         {/* Premium Gallery Configuration */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
-          <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2 mb-2">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 shadow-sm p-6">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-2">
             <div className="bg-black text-white p-1 rounded-full"><Star size={12} className="fill-white" /></div>
             Premium Gallery Configuration
           </h2>
-          <p className="text-xs text-gray-500 mb-6">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-6">
             Set an unlock price to lock the gallery items (except the first one). Users must pay or use a valid coupon code to view them. Set price to 0 to make the gallery free.
           </p>
 
           <div className="grid grid-cols-2 gap-6 mb-6">
             <div>
-              <label className="block text-xs font-bold text-gray-900 mb-2">Unlock Price ($)</label>
+              <label className="block text-xs font-bold text-gray-900 dark:text-white mb-2">Unlock Price ($)</label>
               <input type="number" name="galleryUnlockPrice" value={service.galleryUnlockPrice} onChange={handleChange} className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-gray-900 text-sm" />
             </div>
             <div>
-              <label className="block text-xs font-bold text-gray-900 mb-2">Delivery Cost ($)</label>
+              <label className="block text-xs font-bold text-gray-900 dark:text-white mb-2">Delivery Cost ($)</label>
               <input type="number" name="deliveryCost" value={service.deliveryCost} onChange={handleChange} className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-gray-900 text-sm" />
             </div>
           </div>
           
           <div>
-            <label className="block text-xs font-bold text-gray-900 mb-2">Unlock Coupon Codes</label>
-            <button className="border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-full font-bold text-xs flex items-center gap-2 transition-colors">
+            <label className="block text-xs font-bold text-gray-900 dark:text-white mb-2">Unlock Coupon Codes</label>
+            <button className="border border-gray-300 hover:bg-gray-50 dark:bg-gray-950 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full font-bold text-xs flex items-center gap-2 transition-colors">
               <Tag size={14} /> Add Coupon Code
             </button>
           </div>
         </div>
         
         {/* Packages Configuration */}
-        <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Pricing Packages</h2>
+        <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-200 shadow-sm">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Pricing Packages</h2>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {service.packages.map((pkg, pIndex) => (
-              <div key={pkg.name} className="border border-gray-200 rounded-xl bg-gray-50 overflow-hidden flex flex-col">
+              <div key={pkg.name} className="border border-gray-200 rounded-xl bg-gray-50 dark:bg-gray-950 overflow-hidden flex flex-col">
                 <div className={`p-4 text-center font-black text-lg text-white ${
                   pkg.name === 'Basic' ? 'bg-slate-700' : pkg.name === 'Standard' ? 'bg-[#00C6A2]' : 'bg-amber-500'
                 }`}>
@@ -305,15 +305,15 @@ export default function EditService({ params }) {
                 </div>
                 <div className="p-5 space-y-4 flex-1">
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1">Price ($)</label>
+                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Price ($)</label>
                     <input type="number" value={pkg.price} onChange={(e) => handlePackageChange(pIndex, "price", e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:border-gray-900" />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1">Delivery Days</label>
+                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Delivery Days</label>
                     <input type="number" value={pkg.deliveryDays} onChange={(e) => handlePackageChange(pIndex, "deliveryDays", e.target.value)} className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:border-gray-900" />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1">Description</label>
+                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Description</label>
                     <textarea value={pkg.description} onChange={(e) => handlePackageChange(pIndex, "description", e.target.value)} rows="3" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:border-gray-900 text-sm" />
                   </div>
                 </div>
@@ -323,13 +323,13 @@ export default function EditService({ params }) {
         </div>
 
         {/* Checklist Inclusion Matrix */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
           <div className="p-6 border-b border-gray-100">
-            <h2 className="text-lg font-bold text-gray-900">Checklist Inclusion Matrix</h2>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Checklist Inclusion Matrix</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="text-[10px] font-black uppercase text-gray-500 tracking-wider border-b border-gray-100">
+              <thead className="text-[10px] font-black uppercase text-gray-500 dark:text-gray-400 tracking-wider border-b border-gray-100">
                 <tr>
                   <th className="p-4 w-1/2">Feature Description</th>
                   <th className="p-4 text-center text-[#00C6A2]">Basic</th>
@@ -340,8 +340,8 @@ export default function EditService({ params }) {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {service.masterFeatures.map((feat, fIndex) => (
-                  <tr key={fIndex} className="hover:bg-gray-50 transition-colors">
-                    <td className="p-4 text-sm text-gray-700">{feat}</td>
+                  <tr key={fIndex} className="hover:bg-gray-50 dark:bg-gray-950 transition-colors">
+                    <td className="p-4 text-sm text-gray-700 dark:text-gray-300">{feat}</td>
                     {[0, 1, 2].map((pIndex) => {
                       const isChecked = service.packages[pIndex]?.featureChecks?.[fIndex] || false;
                       return (
@@ -349,7 +349,7 @@ export default function EditService({ params }) {
                           <button 
                             onClick={() => toggleFeatureCheck(pIndex, fIndex)}
                             className={`w-5 h-5 mx-auto rounded flex items-center justify-center transition-colors border-2 ${
-                              isChecked ? 'bg-[#00C6A2] border-[#00C6A2]' : 'bg-white border-gray-400'
+                              isChecked ? 'bg-[#00C6A2] border-[#00C6A2]' : 'bg-white dark:bg-gray-900 border-gray-400'
                             }`}
                           >
                             {isChecked && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
@@ -368,7 +368,7 @@ export default function EditService({ params }) {
             </table>
           </div>
           
-          <div className="p-4 border-t border-gray-100 flex gap-4 bg-gray-50">
+          <div className="p-4 border-t border-gray-100 flex gap-4 bg-gray-50 dark:bg-gray-950">
             <input 
               type="text" 
               value={newFeatureName}
@@ -384,14 +384,14 @@ export default function EditService({ params }) {
         </div>
 
         {/* Description Editor (Simplified for UI) */}
-        <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">Description (HTML Supported)</h2>
+        <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-200 shadow-sm">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Description (HTML Supported)</h2>
           <textarea 
             name="description" 
             value={service.description} 
             onChange={handleChange} 
             rows="10" 
-            className="w-full border border-gray-300 rounded-xl p-4 font-mono text-sm outline-none focus:border-gray-900 bg-gray-50" 
+            className="w-full border border-gray-300 rounded-xl p-4 font-mono text-sm outline-none focus:border-gray-900 bg-gray-50 dark:bg-gray-950" 
             placeholder="<!DOCTYPE html>..." 
           />
         </div>

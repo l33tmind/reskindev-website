@@ -55,11 +55,11 @@ export default function GigReviews({ gigId }) {
     : 0;
 
   return (
-    <div className="mt-12 bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+    <div className="mt-12 bg-white dark:bg-gray-900 p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm">
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-3">
         Client Reviews
         {reviews.length > 0 && (
-          <span className="text-sm font-semibold bg-gray-100 px-3 py-1 rounded-full text-gray-700 flex items-center gap-1">
+          <span className="text-sm font-semibold bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded-full text-gray-700 dark:text-gray-300 flex items-center gap-1">
             <Star size={14} className="text-amber-400 fill-amber-400" />
             {avgRating} ({reviews.length})
           </span>
@@ -68,8 +68,8 @@ export default function GigReviews({ gigId }) {
 
       {/* Review Submission Form */}
       {user ? (
-        <form onSubmit={handleSubmit} className="mb-10 bg-gray-50 p-6 rounded-xl border border-gray-100">
-          <h3 className="font-bold text-gray-800 mb-3">Leave a Review</h3>
+        <form onSubmit={handleSubmit} className="mb-10 bg-gray-50 dark:bg-gray-950 p-6 rounded-xl border border-gray-100">
+          <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-3">Leave a Review</h3>
           <div className="flex items-center gap-2 mb-4">
             {[1, 2, 3, 4, 5].map(star => (
               <button
@@ -110,15 +110,15 @@ export default function GigReviews({ gigId }) {
       {/* Reviews List */}
       <div className="space-y-6">
         {reviews.length === 0 ? (
-          <p className="text-gray-500 text-center py-4">No reviews yet. Be the first to review!</p>
+          <p className="text-gray-500 dark:text-gray-400 text-center py-4">No reviews yet. Be the first to review!</p>
         ) : (
           reviews.map(review => (
             <div key={review.id} className="flex gap-4 pb-6 border-b border-gray-100 last:border-0 last:pb-0">
               <img src={review.userImage} alt={review.userName} className="w-10 h-10 rounded-full object-cover" />
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">
-                  <h4 className="font-bold text-gray-900 text-sm">{review.userName}</h4>
-                  <span className="text-xs text-gray-500">
+                  <h4 className="font-bold text-gray-900 dark:text-white text-sm">{review.userName}</h4>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
                     {review.createdAt?.toDate ? review.createdAt.toDate().toLocaleDateString() : 'Just now'}
                   </span>
                 </div>
@@ -131,7 +131,7 @@ export default function GigReviews({ gigId }) {
                     />
                   ))}
                 </div>
-                <p className="text-gray-700 text-sm">{review.comment}</p>
+                <p className="text-gray-700 dark:text-gray-300 text-sm">{review.comment}</p>
               </div>
             </div>
           ))

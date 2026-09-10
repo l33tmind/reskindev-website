@@ -46,7 +46,7 @@ export default function AdminOrders() {
   return (
     <div>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <h1 className="text-3xl font-extrabold text-gray-900 flex items-center gap-2">
+        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
           <Package size={28} className="text-[#00C6A2]" /> Client Orders
         </h1>
         <div className="relative w-full md:w-64">
@@ -61,10 +61,10 @@ export default function AdminOrders() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200 text-gray-500 uppercase text-xs font-bold">
+            <thead className="bg-gray-50 dark:bg-gray-950 border-b border-gray-200 text-gray-500 dark:text-gray-400 uppercase text-xs font-bold">
               <tr>
                 <th className="px-6 py-4">Client</th>
                 <th className="px-6 py-4">Service</th>
@@ -77,25 +77,25 @@ export default function AdminOrders() {
             <tbody className="divide-y divide-gray-100">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-10 text-center text-gray-500">
+                  <td colSpan="6" className="px-6 py-10 text-center text-gray-500 dark:text-gray-400">
                     No orders found.
                   </td>
                 </tr>
               ) : (
                 filteredOrders.map(order => (
-                  <tr key={order.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={order.id} className="hover:bg-gray-50 dark:bg-gray-950 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="font-bold text-gray-900">{order.userName || "Unknown"}</div>
-                      <div className="text-xs text-gray-500">{order.userEmail}</div>
+                      <div className="font-bold text-gray-900 dark:text-white">{order.userName || "Unknown"}</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">{order.userEmail}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="font-bold text-gray-800 line-clamp-1">{order.gigTitle}</div>
+                      <div className="font-bold text-gray-800 dark:text-gray-200 line-clamp-1">{order.gigTitle}</div>
                       <div className="text-xs text-[#00C6A2] font-bold uppercase">{order.packageName} Pkg</div>
                     </td>
-                    <td className="px-6 py-4 font-black text-gray-900">
+                    <td className="px-6 py-4 font-black text-gray-900 dark:text-white">
                       ${order.price}
                     </td>
-                    <td className="px-6 py-4 text-gray-500">
+                    <td className="px-6 py-4 text-gray-500 dark:text-gray-400">
                       {order.createdAt?.toDate ? order.createdAt.toDate().toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4">

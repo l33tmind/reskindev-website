@@ -45,22 +45,22 @@ export default function ProfileSettings() {
 
   return (
     <div>
-      <h1 className="text-2xl font-extrabold text-gray-900 mb-6">Profile Settings</h1>
+      <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-6">Profile Settings</h1>
       
-      <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm max-w-2xl">
+      <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-200 shadow-sm max-w-2xl">
         <div className="space-y-6">
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Email Address (Read-only)</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Email Address (Read-only)</label>
             <input 
               type="text" 
               disabled
               value={user?.email || ""}
-              className="w-full border border-gray-200 bg-gray-50 rounded-lg p-3 text-gray-500 cursor-not-allowed"
+              className="w-full border border-gray-200 bg-gray-50 dark:bg-gray-950 rounded-lg p-3 text-gray-500 dark:text-gray-400 cursor-not-allowed"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Display Name</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Display Name</label>
             <input 
               type="text" 
               name="displayName"
@@ -71,7 +71,7 @@ export default function ProfileSettings() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Phone Number</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Phone Number</label>
             <input 
               type="text" 
               name="phone"
@@ -83,7 +83,7 @@ export default function ProfileSettings() {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-gray-700 mb-2">Country</label>
+            <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Country</label>
             <input 
               type="text" 
               name="country"

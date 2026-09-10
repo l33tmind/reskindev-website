@@ -40,11 +40,11 @@ export default function UserProfile({ params }) {
   const authorImage = gigs.length > 0 && gigs[0].authorImage ? gigs[0].authorImage : `https://ui-avatars.com/api/?name=MD+Robius+Sany&background=00C6A2&color=fff&size=256`;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Navbar />
       
       {/* Profile Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             <img 
@@ -53,8 +53,8 @@ export default function UserProfile({ params }) {
               className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg object-cover"
             />
             <div className="text-center md:text-left mt-2">
-              <h1 className="text-3xl font-extrabold text-gray-900">{authorName}</h1>
-              <p className="text-gray-500 mt-2 max-w-2xl">
+              <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">{authorName}</h1>
+              <p className="text-gray-500 dark:text-gray-400 mt-2 max-w-2xl">
                 Welcome to my profile! Here you can find all the premium services and gigs I offer.
               </p>
               <div className="mt-4 flex gap-4 justify-center md:justify-start">
@@ -69,10 +69,10 @@ export default function UserProfile({ params }) {
 
       {/* User's Gigs */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">My Services</h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">My Services</h2>
         
         {loading ? (
-          <div className="text-center py-20 text-gray-500">Loading services...</div>
+          <div className="text-center py-20 text-gray-500 dark:text-gray-400">Loading services...</div>
         ) : (
           <ServiceGrid gigs={gigs} />
         )}

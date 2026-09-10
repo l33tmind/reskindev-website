@@ -88,8 +88,8 @@ export default function AdminPages() {
     <div className="max-w-6xl mx-auto relative">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Manage Pages</h1>
-          <p className="text-gray-500 text-sm">Create and manage dynamic pages like Terms, Privacy Policy, etc.</p>
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Manage Pages</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">Create and manage dynamic pages like Terms, Privacy Policy, etc.</p>
         </div>
         <button 
           onClick={() => openForm()}
@@ -99,9 +99,9 @@ export default function AdminPages() {
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <table className="w-full text-left text-sm text-gray-600">
-          <thead className="bg-gray-50 border-b border-gray-200 text-gray-900">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <table className="w-full text-left text-sm text-gray-600 dark:text-gray-400">
+          <thead className="bg-gray-50 dark:bg-gray-950 border-b border-gray-200 text-gray-900 dark:text-white">
             <tr>
               <th className="px-6 py-4 font-bold">Title</th>
               <th className="px-6 py-4 font-bold">Slug / URL</th>
@@ -111,8 +111,8 @@ export default function AdminPages() {
           </thead>
           <tbody>
             {pages.map((p) => (
-              <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50">
-                <td className="px-6 py-4 font-bold text-gray-900">{p.title}</td>
+              <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50 dark:bg-gray-950">
+                <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">{p.title}</td>
                 <td className="px-6 py-4">{p.slug || p.linkUrl}</td>
                 <td className="px-6 py-4 capitalize">
                   <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${p.pageType === 'link' ? 'bg-blue-50 text-blue-600' : 'bg-green-50 text-green-600'}`}>
@@ -135,7 +135,7 @@ export default function AdminPages() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">{editingPage ? 'Edit Page' : 'Add New Page'}</h2>
             <div className="space-y-4">
               <div>
@@ -170,7 +170,7 @@ export default function AdminPages() {
             </div>
             
             <div className="flex justify-end gap-3 mt-6 pt-6 border-t">
-              <button onClick={() => setIsModalOpen(false)} className="px-6 py-2 rounded-lg font-bold text-gray-500 hover:bg-gray-100">Cancel</button>
+              <button onClick={() => setIsModalOpen(false)} className="px-6 py-2 rounded-lg font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800">Cancel</button>
               <button onClick={handleSave} className="px-6 py-2 rounded-lg font-bold bg-[#00C6A2] text-white hover:bg-[#00b08f]">Save</button>
             </div>
           </div>

@@ -46,16 +46,16 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col relative">
       <div className="p-6">
-        <Link href="/" className="inline-flex hover:bg-gray-200 p-2 rounded-full transition-colors">
-          <X size={24} className="text-gray-900" />
+        <Link href="/" className="inline-flex hover:bg-gray-200 dark:bg-gray-700 p-2 rounded-full transition-colors">
+          <X size={24} className="text-gray-900 dark:text-white" />
         </Link>
       </div>
       
       <div className="flex-1 flex items-center justify-center p-4 pb-20">
         <div className="w-full max-w-md">
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-black text-gray-900 mb-2">Welcome Back</h1>
-            <p className="text-gray-500 font-medium">Sign in to manage your orders and profile</p>
+            <h1 className="text-3xl font-black text-gray-900 dark:text-white mb-2">Welcome Back</h1>
+            <p className="text-gray-500 dark:text-gray-400 font-medium">Sign in to manage your orders and profile</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -82,7 +82,7 @@ export default function Login() {
               <button 
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-gray-400"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -111,7 +111,7 @@ export default function Login() {
 
           <button 
             onClick={handleGoogleLogin}
-            className="w-full bg-transparent border border-gray-200 hover:bg-gray-50 text-gray-900 py-4 rounded-xl font-bold transition-colors flex items-center justify-center gap-3"
+            className="w-full bg-transparent border border-gray-200 hover:bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-white py-4 rounded-xl font-bold transition-colors flex items-center justify-center gap-3"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -122,7 +122,7 @@ export default function Login() {
             Continue with Google
           </button>
 
-          <p className="text-center mt-8 text-sm font-medium text-gray-500">
+          <p className="text-center mt-8 text-sm font-medium text-gray-500 dark:text-gray-400">
             New here? <Link href="/signup" className="text-[#00C6A2] font-bold hover:underline">Create Account</Link>
           </p>
         </div>

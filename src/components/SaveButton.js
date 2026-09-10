@@ -50,7 +50,7 @@ export default function SaveButton({ gigId }) {
       className={`p-3 rounded-full border transition-colors shadow-sm flex items-center justify-center ${
         isSaved 
           ? "bg-red-50 border-red-200 text-red-500 hover:bg-red-100" 
-          : "bg-white border-gray-200 text-gray-400 hover:bg-gray-50 hover:text-red-500"
+          : "bg-white dark:bg-gray-900 border-gray-200 text-gray-400 hover:bg-gray-50 dark:bg-gray-950 hover:text-red-500"
       }`}
       title={isSaved ? "Remove from Saved" : "Save this Service"}
     >

@@ -123,10 +123,10 @@ export default function OrderPage({ params }) {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col items-center justify-center">
         <CheckCircle2 size={80} className="text-green-500 mb-6" />
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Order Placed Successfully!</h1>
-        <p className="text-gray-600 mb-8">We will review your requirements and start working on it.</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Order Placed Successfully!</h1>
+        <p className="text-gray-600 dark:text-gray-400 mb-8">We will review your requirements and start working on it.</p>
         <Link href="/profile/orders" className="bg-[#00C6A2] text-white px-8 py-3 rounded-full font-bold hover:bg-[#00b08f] transition-colors">
           View My Orders
         </Link>
@@ -135,21 +135,21 @@ export default function OrderPage({ params }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20">
       <Navbar />
       
       <div className="max-w-4xl mx-auto px-4 md:px-8 py-10">
-        <button onClick={() => router.back()} className="inline-flex items-center text-sm font-semibold text-gray-500 hover:text-gray-900 mb-8">
+        <button onClick={() => router.back()} className="inline-flex items-center text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-white mb-8">
           <ArrowLeft size={16} className="mr-2" /> Back
         </button>
 
-        <h1 className="text-3xl font-extrabold text-gray-900 mb-8">Checkout</h1>
+        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-8">Checkout</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Order Form */}
           <div className="md:col-span-2">
-            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Order Requirements</h2>
+            <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 shadow-sm">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Order Requirements</h2>
               {!user && (
                 <div className="bg-amber-50 text-amber-800 p-4 rounded-lg mb-6 text-sm font-semibold border border-amber-200">
                   ⚠️ You need to sign in using the top-right button before submitting.
@@ -166,7 +166,7 @@ export default function OrderPage({ params }) {
               </div>
 
               <form onSubmit={handleOrder}>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                   Please provide all necessary details for this order (App links, credentials, specifics):
                 </label>
                 <textarea
@@ -193,20 +193,20 @@ export default function OrderPage({ params }) {
 
           {/* Order Summary */}
           <div className="md:col-span-1">
-            <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm sticky top-24">
-              <h2 className="text-lg font-bold text-gray-900 mb-4 border-b border-gray-100 pb-4">Order Summary</h2>
+            <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 shadow-sm sticky top-24">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-100 pb-4">Order Summary</h2>
               
               <div className="flex gap-4 mb-4">
                 {gig.imageUrl && (
                   <img src={gig.imageUrl} alt="Gig" className="w-16 h-16 object-cover rounded-lg" />
                 )}
                 <div className="flex-1">
-                  <h3 className="font-bold text-sm text-gray-900 line-clamp-2">{gig.title}</h3>
+                  <h3 className="font-bold text-sm text-gray-900 dark:text-white line-clamp-2">{gig.title}</h3>
                   <p className="text-xs text-green-600 font-bold uppercase mt-1">{pkgName} Package</p>
                 </div>
               </div>
               
-              <div className="flex justify-between items-center text-sm mb-2 text-gray-600">
+              <div className="flex justify-between items-center text-sm mb-2 text-gray-600 dark:text-gray-400">
                 <span>Subtotal</span>
                 <span>${basePrice}.00</span>
               </div>
@@ -220,7 +220,7 @@ export default function OrderPage({ params }) {
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                     disabled={discountAmount > 0}
-                    className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#00C6A2] disabled:bg-gray-50"
+                    className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-[#00C6A2] disabled:bg-gray-50 dark:bg-gray-950"
                   />
                   <button 
                     onClick={handleApplyCoupon}
@@ -241,12 +241,12 @@ export default function OrderPage({ params }) {
                 </div>
               )}
               
-              <div className="flex justify-between items-center text-sm mb-4 text-gray-600">
+              <div className="flex justify-between items-center text-sm mb-4 text-gray-600 dark:text-gray-400">
                 <span>Service Fee</span>
                 <span>$0.00</span>
               </div>
               
-              <div className="flex justify-between items-center font-black text-lg text-gray-900 border-t border-gray-100 pt-4">
+              <div className="flex justify-between items-center font-black text-lg text-gray-900 dark:text-white border-t border-gray-100 pt-4">
                 <span>Total</span>
                 <span>${finalPrice}.00</span>
               </div>

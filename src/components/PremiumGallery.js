@@ -27,37 +27,41 @@ export default function PremiumGallery({ images, unlockPrice }) {
 
   return (
     <div className="mb-8">
-      <h2 className="text-xl font-bold mb-4 text-gray-900 flex items-center gap-2">
+      <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white flex items-center gap-2">
         <ImageIcon size={20} className="text-[#00C6A2]" /> 
         Premium Screenshots
       </h2>
       
-      <div className="relative bg-white p-4 rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className={`relative bg-white dark:bg-gray-900 p-4 rounded-2xl border border-gray-200 shadow-sm overflow-hidden ${!unlocked ? 'min-h-[350px] flex flex-col justify-center' : ''}`}>
         
         {/* Gallery Grid */}
-        <div className={`grid grid-cols-2 md:grid-cols-3 gap-3 ${!unlocked ? 'blur-md opacity-70 select-none pointer-events-none' : ''}`}>
-          {images.map((img, idx) => (
-            <div key={idx} className="aspect-[4/3] rounded-lg overflow-hidden bg-gray-100">
+        <div className={`grid grid-cols-2 md:grid-cols-3 gap-3 ${!unlocked ? 'absolute inset-0 blur-xl opacity-40 select-none pointer-events-none p-4' : ''}`}>
+          {(images || []).map((img, idx) => (
+            <div key={idx} className="aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
               <img src={img} alt={`Premium ${idx + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform" />
             </div>
+          ))}
+          {/* Fill empty spots to ensure blur background looks populated */}
+          {!unlocked && images.length < 3 && [...Array(3 - images.length)].map((_, i) => (
+             <div key={`empty-${i}`} className="aspect-[4/3] rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
           ))}
         </div>
 
         {/* Lock Overlay */}
         {!unlocked && (
-          <div className="absolute inset-0 bg-white/40 flex flex-col items-center justify-center backdrop-blur-sm z-10">
-            <div className="bg-white p-6 rounded-2xl shadow-xl border border-gray-200 text-center max-w-sm w-full mx-4">
-              <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="relative z-10 flex flex-col items-center justify-center h-full w-full py-8">
+            <div className="bg-white dark:bg-gray-900/90 backdrop-blur-md p-6 sm:p-8 rounded-2xl shadow-xl border border-gray-200 text-center max-w-sm w-full mx-auto transform transition-all">
+              <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 ring-8 ring-red-50/50">
                 <Lock size={32} />
               </div>
-              <h3 className="font-bold text-gray-900 text-lg mb-2">Exclusive Content Locked</h3>
-              <p className="text-gray-500 text-sm mb-6">
+              <h3 className="font-bold text-gray-900 dark:text-white text-lg sm:text-xl mb-2">Exclusive Content Locked</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-6 px-2">
                 Unlock high-quality premium screenshots and secret app features for this service.
               </p>
               <button 
                 onClick={handleUnlock}
                 disabled={unlocking}
-                className="w-full bg-[#00C6A2] hover:bg-[#00b08f] text-white font-bold py-3 px-4 rounded-xl transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-[#00C6A2] hover:bg-[#00b08f] text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
               >
                 {unlocking ? "Processing..." : (
                   <>

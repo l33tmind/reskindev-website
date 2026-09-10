@@ -12,7 +12,8 @@ import {
   FileText, 
   Tag,
   Bell,
-  ArrowLeft
+  ArrowLeft,
+  MessageSquare
 } from "lucide-react";
 
 export default function AdminLayout({ children }) {
@@ -24,9 +25,9 @@ export default function AdminLayout({ children }) {
   // Protect Admin Route
   if (!user || dbUser?.role !== "admin") {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-950">
         <h2 className="text-2xl font-bold text-red-600 mb-4">Access Denied</h2>
-        <p className="text-gray-500 mb-6">You do not have Admin privileges.</p>
+        <p className="text-gray-500 dark:text-gray-400 mb-6">You do not have Admin privileges.</p>
         <Link href="/" className="text-blue-500 underline">Return Home</Link>
       </div>
     );
@@ -35,6 +36,7 @@ export default function AdminLayout({ children }) {
   const menuItems = [
     { name: "Overview", icon: LayoutDashboard, path: "/admin" },
     { name: "All Orders", icon: ListOrdered, path: "/admin/orders" },
+    { name: "Messages", icon: MessageSquare, path: "/admin/messages" },
     { name: "Users", icon: Users, path: "/admin/users" },
     { name: "Manage Services", icon: Briefcase, path: "/admin/services" },
     { name: "Manage Pages", icon: FileText, path: "/admin/pages" },
@@ -45,9 +47,9 @@ export default function AdminLayout({ children }) {
   return (
     <div className="min-h-screen bg-[#F4F7F6] flex flex-col md:flex-row">
       {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-white border-r border-gray-200 flex-shrink-0">
+      <aside className="w-full md:w-64 bg-white dark:bg-gray-900 border-r border-gray-200 flex-shrink-0">
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
-          <Link href="/" className="font-extrabold text-lg text-gray-900 flex items-center gap-2">
+          <Link href="/" className="font-extrabold text-lg text-gray-900 dark:text-white flex items-center gap-2">
             <img src="https://reskindev.com/favicon.png" className="h-6" alt="Logo" />
             Reskindev Admin
           </Link>
@@ -63,7 +65,7 @@ export default function AdminLayout({ children }) {
                   className={`flex items-center gap-3 px-6 py-3 text-sm font-semibold transition-colors ${
                     isActive 
                       ? "bg-[#E6F9F5] text-[#00C6A2] border-r-4 border-[#00C6A2]" 
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-950 hover:text-gray-900 dark:text-white"
                   }`}
                 >
                   <item.icon size={18} className={isActive ? "text-[#00C6A2]" : "text-gray-400"} />
@@ -78,13 +80,13 @@ export default function AdminLayout({ children }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-10">
+        <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-10">
           <div className="flex-1" />
           <div className="flex items-center gap-6">
-            <button className="text-gray-500 hover:text-gray-900">
+            <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-white">
               <Bell size={20} />
             </button>
-            <Link href="/" className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900">
+            <Link href="/" className="flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-white">
               <ArrowLeft size={16} /> Back to Website
             </Link>
           </div>

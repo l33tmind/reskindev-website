@@ -62,8 +62,8 @@ export default function AdminCoupons() {
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Coupons</h1>
-          <p className="text-gray-500 text-sm">Create and manage discount coupons.</p>
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Coupons</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">Create and manage discount coupons.</p>
         </div>
         <button 
           onClick={() => setIsModalOpen(true)}
@@ -73,9 +73,9 @@ export default function AdminCoupons() {
         </button>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-        <table className="w-full text-left text-sm text-gray-600">
-          <thead className="bg-gray-50 border-b border-gray-200 text-gray-900">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <table className="w-full text-left text-sm text-gray-600 dark:text-gray-400">
+          <thead className="bg-gray-50 dark:bg-gray-950 border-b border-gray-200 text-gray-900 dark:text-white">
             <tr>
               <th className="px-6 py-4 font-bold">Code</th>
               <th className="px-6 py-4 font-bold">Discount</th>
@@ -85,9 +85,9 @@ export default function AdminCoupons() {
           </thead>
           <tbody>
             {coupons.map((c) => (
-              <tr key={c.id} className="border-b border-gray-100 hover:bg-gray-50">
+              <tr key={c.id} className="border-b border-gray-100 hover:bg-gray-50 dark:bg-gray-950">
                 <td className="px-6 py-4 font-black text-[#00C6A2] tracking-wider">{c.code}</td>
-                <td className="px-6 py-4 font-bold text-gray-900">${c.discount}</td>
+                <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">${c.discount}</td>
                 <td className="px-6 py-4">{c.usageCount || 0} / {c.usageLimit || '∞'}</td>
                 <td className="px-6 py-4 flex justify-end">
                   <button onClick={() => handleDelete(c.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-full">
@@ -107,7 +107,7 @@ export default function AdminCoupons() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl max-w-md w-full p-6">
             <h2 className="text-xl font-bold mb-6">Create Coupon</h2>
             <div className="space-y-4">
               <div>
@@ -125,7 +125,7 @@ export default function AdminCoupons() {
             </div>
             
             <div className="flex justify-end gap-3 mt-6 pt-6 border-t">
-              <button onClick={() => setIsModalOpen(false)} className="px-6 py-2 rounded-lg font-bold text-gray-500 hover:bg-gray-100">Cancel</button>
+              <button onClick={() => setIsModalOpen(false)} className="px-6 py-2 rounded-lg font-bold text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800">Cancel</button>
               <button onClick={handleSave} className="px-6 py-2 rounded-lg font-bold bg-[#00C6A2] text-white hover:bg-[#00b08f]">Create</button>
             </div>
           </div>

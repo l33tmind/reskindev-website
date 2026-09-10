@@ -26,10 +26,10 @@ export default function AdminUsers() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <h1 className="text-3xl font-extrabold text-gray-900 mb-2">User Management</h1>
-      <p className="text-gray-500 mb-8 text-sm">Manage registered users and their access.</p>
+      <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">User Management</h1>
+      <p className="text-gray-500 dark:text-gray-400 mb-8 text-sm">Manage registered users and their access.</p>
 
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
         <div className="flex flex-col">
           {users.map((u, i) => (
             <div key={u.id} className={`flex items-center justify-between p-5 ${i !== users.length - 1 ? 'border-b border-gray-100' : ''}`}>
@@ -42,8 +42,8 @@ export default function AdminUsers() {
                   </div>
                 )}
                 <div>
-                  <h3 className="font-bold text-gray-900">{u.displayName || "Unknown User"}</h3>
-                  <p className="text-sm text-gray-500">{u.email}</p>
+                  <h3 className="font-bold text-gray-900 dark:text-white">{u.displayName || "Unknown User"}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">{u.email}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">

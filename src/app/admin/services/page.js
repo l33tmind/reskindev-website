@@ -41,8 +41,8 @@ export default function AdminServices() {
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold text-gray-900 mb-2">Manage Services</h1>
-          <p className="text-gray-500 text-sm">Drag and drop to reorder. Add, edit, or remove services.</p>
+          <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Manage Services</h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">Drag and drop to reorder. Add, edit, or remove services.</p>
         </div>
         <Link href="/admin/services/edit/new">
           <button className="bg-[#00C6A2] hover:bg-[#00b08f] text-white px-5 py-2.5 rounded-full font-bold text-sm shadow-md flex items-center gap-2 transition-colors">
@@ -65,8 +65,8 @@ export default function AdminServices() {
           const pkgCount = service.packages ? service.packages.length : 0;
 
           return (
-            <div key={service.id} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group">
-              <div className="w-full h-44 relative bg-gray-100">
+            <div key={service.id} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col group">
+              <div className="w-full h-44 relative bg-gray-100 dark:bg-gray-800">
                 {coverImage ? (
                   <img src={coverImage} alt={service.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 ) : (
@@ -75,19 +75,19 @@ export default function AdminServices() {
               </div>
               <div className="p-5 flex flex-col flex-1">
                 <div className="flex justify-between items-start gap-4 mb-2">
-                  <h3 className="font-bold text-gray-900 text-sm leading-snug line-clamp-2">{service.title}</h3>
+                  <h3 className="font-bold text-gray-900 dark:text-white text-sm leading-snug line-clamp-2">{service.title}</h3>
                   <span className="text-[9px] font-bold tracking-wider text-green-700 bg-green-50 uppercase px-2 py-1 rounded-sm border border-green-200">
                     PUBLISHED
                   </span>
                 </div>
                 
-                <p className="text-xs text-gray-500 mb-6">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-6">
                   ${basePrice} Base Price • {pkgCount} Packages
                 </p>
                 
                 <div className="mt-auto flex items-center gap-3">
                   <Link href={`/admin/services/edit/${service.id}`} className="flex-1">
-                    <button className="w-full bg-white hover:bg-gray-50 text-[#00C6A2] border border-[#00C6A2] font-bold py-2 rounded-full text-xs transition-colors flex items-center justify-center gap-2">
+                    <button className="w-full bg-white dark:bg-gray-900 hover:bg-gray-50 dark:bg-gray-950 text-[#00C6A2] border border-[#00C6A2] font-bold py-2 rounded-full text-xs transition-colors flex items-center justify-center gap-2">
                       <Edit2 size={14} /> Edit
                     </button>
                   </Link>

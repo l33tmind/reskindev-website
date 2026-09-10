@@ -51,7 +51,7 @@ export default async function GigDetail({ params }) {
   const docSnap = await getDoc(docRef);
 
   if (!docSnap.exists()) {
-    return <div className="min-h-screen flex items-center justify-center text-gray-500">Service not found.</div>;
+    return <div className="min-h-screen flex items-center justify-center text-gray-500 dark:text-gray-400">Service not found.</div>;
   }
 
   let gig = docSnap.data();
@@ -69,16 +69,16 @@ export default async function GigDetail({ params }) {
   const videoUrls = gig.youtubeUrls?.length > 0 ? gig.youtubeUrls : (gig.youtubeUrl ? [gig.youtubeUrl] : []);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20">
       <Navbar />
 
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link href="/" className="p-2 bg-white rounded-full border border-gray-200 hover:bg-gray-50 transition-colors shadow-sm">
-              <ArrowLeft size={20} className="text-gray-600" />
+            <Link href="/" className="p-2 bg-white dark:bg-gray-900 rounded-full border border-gray-200 hover:bg-gray-50 dark:bg-gray-950 transition-colors shadow-sm">
+              <ArrowLeft size={20} className="text-gray-600 dark:text-gray-400" />
             </Link>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 leading-tight">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white leading-tight">
               {gig.title}
             </h1>
           </div>
@@ -88,7 +88,7 @@ export default async function GigDetail({ params }) {
           </div>
         </div>
         
-        <p className="text-gray-500 text-sm mb-8">Review gig features, previews, and select your custom package</p>
+        <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">Review gig features, previews, and select your custom package</p>
         
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           {/* Left Column: Media & Description */}
@@ -100,10 +100,10 @@ export default async function GigDetail({ params }) {
             <PremiumGallery images={gig.galleryImages} unlockPrice={gig.galleryUnlockPrice} />
 
             {/* Service Description */}
-            <h2 className="text-xl font-bold mb-4 text-gray-900">Service Description</h2>
-            <div className="bg-white p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm">
+            <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Service Description</h2>
+            <div className="bg-white dark:bg-gray-900 p-6 md:p-8 rounded-2xl border border-gray-200 shadow-sm">
               <div 
-                className="prose max-w-none text-gray-700 leading-relaxed" 
+                className="prose max-w-none text-gray-700 dark:text-gray-300 leading-relaxed" 
                 dangerouslySetInnerHTML={{ __html: gig.description }} 
               />
             </div>
@@ -120,7 +120,7 @@ export default async function GigDetail({ params }) {
               href={`https://wa.me/${gig.whatsappNumber?.replace(/[^0-9]/g, "") || ""}?text=Hi!%20I'm%20interested%20in%20your%20gig:%20${encodeURIComponent(gig.title)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-6 w-full bg-white border-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2"
+              className="mt-6 w-full bg-white dark:bg-gray-900 border-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2"
             >
               <MessageCircle size={20} />
               Contact Seller Directly

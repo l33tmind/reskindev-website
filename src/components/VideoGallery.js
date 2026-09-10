@@ -20,7 +20,7 @@ export default function VideoGallery({ youtubeUrls, imageUrl, title }) {
             <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
           </div>
         ) : (
-          <div className="aspect-video w-full flex items-center justify-center text-gray-400 bg-gray-100">
+          <div className="aspect-video w-full flex items-center justify-center text-gray-400 bg-gray-100 dark:bg-gray-800">
             No Preview Available
           </div>
         )}
@@ -69,7 +69,7 @@ export default function VideoGallery({ youtubeUrls, imageUrl, title }) {
               >
                 <img src={thumbUrl} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                  <div className="w-8 h-8 rounded-full bg-white/30 backdrop-blur-sm flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-full bg-white dark:bg-gray-900/30 backdrop-blur-sm flex items-center justify-center">
                      <Play size={14} className="text-white fill-white ml-0.5" />
                   </div>
                 </div>

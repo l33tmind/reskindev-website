@@ -54,7 +54,7 @@ export default async function Home() {
   const featuredAppUrl = settings.featured_app_url || "#";
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-20 relative">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20 relative">
       <Navbar />
 
       {/* Hero Section */}
@@ -71,14 +71,14 @@ export default async function Home() {
             </p>
             
             {/* Featured App Card */}
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 max-w-md flex items-center gap-4">
+            <div className="bg-white dark:bg-gray-900/10 backdrop-blur-md border border-white/20 rounded-xl p-4 max-w-md flex items-center gap-4">
               <img src={featuredAppIcon} alt={featuredAppName} className="w-12 h-12 rounded-lg shadow-md" />
               <div className="flex-1">
                 <h3 className="text-white font-bold text-sm line-clamp-1">{featuredAppName}</h3>
                 <p className="text-white/70 text-xs">Developer: {featuredAppDev}</p>
                 <p className="text-white/70 text-xs">Free</p>
               </div>
-              <a href={featuredAppUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center bg-white/20 hover:bg-white/30 p-2 rounded-lg transition">
+              <a href={featuredAppUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center bg-white dark:bg-gray-900/20 hover:bg-white dark:bg-gray-900/30 p-2 rounded-lg transition">
                 <svg className="w-6 h-6 text-white mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 <span className="text-[10px] text-white font-semibold">Download</span>
               </a>
@@ -103,19 +103,19 @@ export default async function Home() {
 
       {/* Services Section */}
       <div className="py-12 px-4 md:px-8 max-w-7xl mx-auto">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 font-outfit">Explore Services</h2>
-        <p className="text-gray-500 mb-8 text-lg">Find the best services for your next project</p>
+        <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2 font-outfit">Explore Services</h2>
+        <p className="text-gray-500 dark:text-gray-400 mb-8 text-lg">Find the best services for your next project</p>
         
         <ServiceGrid gigs={gigs} />
       </div>
 
       {/* App Promo Footer Section */}
-      <div className="w-full bg-white border-t border-gray-200 mt-10 pt-16 pb-12 overflow-hidden">
+      <div className="w-full bg-white dark:bg-gray-900 border-t border-gray-200 mt-10 pt-16 pb-12 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 md:px-8 text-center mb-10">
-          <h2 className="text-3xl md:text-4xl font-black text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-4">
             Manage Projects From Your iPhone
           </h2>
-          <p className="text-gray-500 text-lg mb-8 max-w-2xl mx-auto">
+          <p className="text-gray-500 dark:text-gray-400 text-lg mb-8 max-w-2xl mx-auto">
             Download the official Reskindev iOS app. Track live project milestones, receive instant notifications, and chat directly with developers anytime.
           </p>
           <a href="https://apps.apple.com/us/app/reskindev/id6802118085" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-3 bg-black hover:bg-gray-900 border border-gray-800 text-white px-8 py-3.5 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
@@ -190,7 +190,7 @@ function AppScreenshot({ title, type }) {
         </div>
         
         {/* Screen Content */}
-        <div className="w-full h-full bg-white pt-10 px-3 pb-4 flex flex-col">
+        <div className="w-full h-full bg-white dark:bg-gray-900 pt-10 px-3 pb-4 flex flex-col">
           {type === 'list' && (
             <>
               <div className="flex items-center gap-2 mb-4">
@@ -200,20 +200,20 @@ function AppScreenshot({ title, type }) {
               <div className="bg-[#00C6A2]/10 rounded-xl p-3 mb-3 border border-[#00C6A2]/20">
                 <span className="text-[8px] bg-[#00C6A2] text-white px-2 py-0.5 rounded uppercase font-bold">Premium Services</span>
                 <h4 className="text-[10px] font-bold mt-2 mb-1">Hire Freelancer</h4>
-                <p className="text-[7px] text-gray-500 line-clamp-2 mb-2">Explore top tier freelance services for your custom mobile and web applications.</p>
+                <p className="text-[7px] text-gray-500 dark:text-gray-400 line-clamp-2 mb-2">Explore top tier freelance services for your custom mobile and web applications.</p>
                 <div className="flex gap-2">
                   <div className="bg-[#00C6A2] text-white text-[7px] px-2 py-1 rounded">Explore Services</div>
-                  <div className="bg-gray-200 text-gray-700 text-[7px] px-2 py-1 rounded">My Orders</div>
+                  <div className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-[7px] px-2 py-1 rounded">My Orders</div>
                 </div>
               </div>
               <div className="flex gap-2 overflow-hidden mb-3">
-                <div className="bg-gray-100 px-2 py-1 rounded-full text-[8px] whitespace-nowrap border border-gray-200">Mobile Apps</div>
-                <div className="bg-gray-100 px-2 py-1 rounded-full text-[8px] whitespace-nowrap border border-gray-200">Web Dev</div>
+                <div className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-[8px] whitespace-nowrap border border-gray-200">Mobile Apps</div>
+                <div className="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded-full text-[8px] whitespace-nowrap border border-gray-200">Web Dev</div>
               </div>
-              <div className="flex-1 bg-gray-50 rounded-t-xl border border-gray-100 p-2">
-                <div className="w-full h-16 bg-gray-200 rounded-lg mb-2"></div>
+              <div className="flex-1 bg-gray-50 dark:bg-gray-950 rounded-t-xl border border-gray-100 p-2">
+                <div className="w-full h-16 bg-gray-200 dark:bg-gray-700 rounded-lg mb-2"></div>
                 <div className="w-3/4 h-2 bg-gray-300 rounded mb-1"></div>
-                <div className="w-1/2 h-2 bg-gray-200 rounded"></div>
+                <div className="w-1/2 h-2 bg-gray-200 dark:bg-gray-700 rounded"></div>
               </div>
             </>
           )}
@@ -222,13 +222,13 @@ function AppScreenshot({ title, type }) {
             <>
               <div className="flex items-center justify-between mb-3 px-1 border-b border-gray-100 pb-2">
                 <span className="text-[10px] font-bold text-gray-400">{'<'}</span>
-                <span className="text-[10px] font-bold text-gray-800">All Services</span>
-                <span className="w-2 h-2 rounded-full bg-gray-200"></span>
+                <span className="text-[10px] font-bold text-gray-800 dark:text-gray-200">All Services</span>
+                <span className="w-2 h-2 rounded-full bg-gray-200 dark:bg-gray-700"></span>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {[1,2,3,4].map(i => (
-                  <div key={i} className="bg-gray-50 rounded-lg overflow-hidden border border-gray-100 pb-2">
-                    <div className="h-14 bg-gray-200 mb-1 relative overflow-hidden">
+                  <div key={i} className="bg-gray-50 dark:bg-gray-950 rounded-lg overflow-hidden border border-gray-100 pb-2">
+                    <div className="h-14 bg-gray-200 dark:bg-gray-700 mb-1 relative overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400"></div>
                     </div>
                     <div className="w-full h-1.5 bg-gray-300 rounded mx-1 mb-1 max-w-[80%] mt-1"></div>
@@ -246,17 +246,17 @@ function AppScreenshot({ title, type }) {
               </div>
               <h4 className="text-[11px] font-black leading-tight mb-2">I will professionally edit your videos, youtube video editor</h4>
               <div className="w-full h-24 bg-gray-800 rounded-xl mb-3 relative overflow-hidden flex items-center justify-center">
-                 <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                 <div className="w-8 h-8 rounded-full bg-white dark:bg-gray-900/20 flex items-center justify-center backdrop-blur-sm">
                    <div className="w-0 h-0 border-t-4 border-l-6 border-b-4 border-transparent border-l-white ml-0.5"></div>
                  </div>
               </div>
               <div className="w-1/3 h-2 bg-[#00C6A2] rounded mb-2"></div>
-              <div className="w-full h-1 bg-gray-200 rounded mb-1"></div>
-              <div className="w-full h-1 bg-gray-200 rounded mb-1"></div>
-              <div className="w-4/5 h-1 bg-gray-200 rounded mb-3"></div>
+              <div className="w-full h-1 bg-gray-200 dark:bg-gray-700 rounded mb-1"></div>
+              <div className="w-full h-1 bg-gray-200 dark:bg-gray-700 rounded mb-1"></div>
+              <div className="w-4/5 h-1 bg-gray-200 dark:bg-gray-700 rounded mb-3"></div>
               <div className="flex gap-2">
-                <div className="flex-1 h-8 bg-gray-100 rounded-lg"></div>
-                <div className="flex-1 h-8 bg-gray-100 border border-[#00C6A2] rounded-lg"></div>
+                <div className="flex-1 h-8 bg-gray-100 dark:bg-gray-800 rounded-lg"></div>
+                <div className="flex-1 h-8 bg-gray-100 dark:bg-gray-800 border border-[#00C6A2] rounded-lg"></div>
                 <div className="flex-1 h-8 bg-[#00C6A2] rounded-lg"></div>
               </div>
             </>
@@ -266,12 +266,12 @@ function AppScreenshot({ title, type }) {
             <>
               <h4 className="text-[12px] font-black text-center mb-4 mt-2">My Orders</h4>
               <div className="flex gap-2 mb-4">
-                <div className="flex-1 bg-gray-50 border border-gray-100 rounded-xl p-2 text-center shadow-sm">
-                  <div className="text-[7px] text-gray-500 font-bold mb-1 uppercase">In Progress</div>
+                <div className="flex-1 bg-gray-50 dark:bg-gray-950 border border-gray-100 rounded-xl p-2 text-center shadow-sm">
+                  <div className="text-[7px] text-gray-500 dark:text-gray-400 font-bold mb-1 uppercase">In Progress</div>
                   <div className="text-lg font-black text-[#00C6A2]">0</div>
                 </div>
-                <div className="flex-1 bg-gray-50 border border-gray-100 rounded-xl p-2 text-center shadow-sm">
-                  <div className="text-[7px] text-gray-500 font-bold mb-1 uppercase">Pending</div>
+                <div className="flex-1 bg-gray-50 dark:bg-gray-950 border border-gray-100 rounded-xl p-2 text-center shadow-sm">
+                  <div className="text-[7px] text-gray-500 dark:text-gray-400 font-bold mb-1 uppercase">Pending</div>
                   <div className="text-lg font-black text-orange-500">1</div>
                 </div>
               </div>
@@ -287,7 +287,7 @@ function AppScreenshot({ title, type }) {
                     <div className="w-1/2 h-1.5 bg-gray-400 rounded mb-2 mt-2"></div>
                     <div className="flex justify-between items-center">
                       <div className="bg-orange-50 text-orange-500 text-[6px] px-1.5 py-0.5 rounded font-bold uppercase">Pending</div>
-                      <div className="text-[6px] text-gray-500 font-bold border px-1 py-0.5 rounded">Details</div>
+                      <div className="text-[6px] text-gray-500 dark:text-gray-400 font-bold border px-1 py-0.5 rounded">Details</div>
                     </div>
                   </div>
                 </div>
@@ -302,7 +302,7 @@ function AppScreenshot({ title, type }) {
                     <div className="w-1/2 h-1.5 bg-gray-400 rounded mb-2 mt-2"></div>
                     <div className="flex justify-between items-center">
                       <div className="bg-green-50 text-[#00C6A2] text-[6px] px-1.5 py-0.5 rounded font-bold uppercase">Completed</div>
-                      <div className="text-[6px] text-gray-500 font-bold border px-1 py-0.5 rounded">Details</div>
+                      <div className="text-[6px] text-gray-500 dark:text-gray-400 font-bold border px-1 py-0.5 rounded">Details</div>
                     </div>
                   </div>
                 </div>
