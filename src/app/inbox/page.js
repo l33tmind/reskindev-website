@@ -16,7 +16,11 @@ function InboxContent() {
   const initialChatId = searchParams.get("chat");
   
   const [conversations, setConversations] = useState([]);
-  const [activeChat, setActiveChat] = useState(null);
+  const [activeChat, _setActiveChat] = useState(null);
+  const setActiveChat = (c) => {
+    _setActiveChat(c);
+    activeChatRef.current = c;
+  };
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -28,6 +32,7 @@ function InboxContent() {
   const [filterUnread, setFilterUnread] = useState(false);
   
   const messagesEndRef = useRef(null);
+  const activeChatRef = useRef(activeChat);
   const typingTimeoutRef = useRef(null);
 
   // 1. Fetch conversations
@@ -47,14 +52,14 @@ function InboxContent() {
       }));
       setConversations(convos);
       
-      if (initialChatId && !activeChat) {
+      if (initialChatId && !activeChatRef.current) {
         const found = convos.find(c => c.id === initialChatId);
         if (found) setActiveChat(found);
-      } else if (!activeChat && convos.length > 0 && !initialChatId) {
+      } else if (!activeChatRef.current && convos.length > 0 && !initialChatId) {
         setActiveChat(convos[0]);
-      } else if (activeChat) {
+      } else if (activeChatRef.current) {
         // update active chat reference so we get typing updates
-        const updatedActive = convos.find(c => c.id === activeChat.id);
+        const updatedActive = convos.find(c => c.id === activeChatRef.current.id);
         if (updatedActive) setActiveChat(updatedActive);
       }
     });
