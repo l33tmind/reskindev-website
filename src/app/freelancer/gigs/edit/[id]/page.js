@@ -12,7 +12,7 @@ import Navbar from "@/components/Navbar";
 import dynamic from 'next/dynamic';
 
 
-const ReactQuill = dynamic(() => import('react-quill'), { ssr: false });
+
 
 
 export default function FreelancerEditGig({ params }) {
@@ -269,20 +269,12 @@ export default function FreelancerEditGig({ params }) {
               <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Gig Description</label>
               <p className="text-xs text-gray-500 mb-4">Write a clear and simple description of what you offer (formatting allowed).</p>
               
-              <div className="quill-wrapper">
-                <link rel="stylesheet" href="https://unpkg.com/react-quill@1.3.3/dist/quill.snow.css" />
-                <ReactQuill 
-
-                  theme="snow" 
-                  value={service.description} 
-                  onChange={(val) => setService(prev => ({ ...prev, description: val }))} 
-                  className="bg-white text-gray-900 rounded-lg min-h-[200px]"
-                />
-              </div>
-              <style jsx global>{`
-                .quill-wrapper .ql-container { min-height: 200px; font-family: inherit; font-size: 14px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px;}
-                .quill-wrapper .ql-toolbar { border-top-left-radius: 8px; border-top-right-radius: 8px; }
-              `}</style>
+              <textarea 
+                value={service.description} 
+                onChange={(e) => setService(prev => ({ ...prev, description: e.target.value }))} 
+                className="w-full border border-gray-300 dark:border-white/10 bg-transparent rounded-xl p-4 outline-none focus:border-[#00C6A2] text-gray-900 dark:text-white min-h-[250px] resize-y"
+                placeholder="Describe your gig in detail..."
+              />
             </div>
 
           </div>
