@@ -43,7 +43,7 @@ function InboxContent() {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const convos = snapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data({ serverTimestamps: "estimate" })
       }));
       setConversations(convos);
       
@@ -92,7 +92,7 @@ function InboxContent() {
     const unsubscribe = onSnapshot(q, (snapshot) => {
       setMessages(snapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data({ serverTimestamps: "estimate" })
       })));
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -146,7 +146,7 @@ function InboxContent() {
     const currentUnread = activeChat.unreadCount?.[otherUserId] || 0;
 
     try {
-      await addDoc(collection(db, "conversations", activeChat.id, "messages"), {
+      const addMessagePromise = addDoc(collection(db, "conversations", activeChat.id, "messages"), {
         text: msgText,
         senderId: user.uid,
         senderName: user.displayName || "User",
@@ -164,7 +164,8 @@ function InboxContent() {
         updateData[`unreadCount.${otherUserId}`] = currentUnread + 1;
       }
       
-      await updateDoc(doc(db, "conversations", activeChat.id), updateData);
+      const updateConvoPromise = updateDoc(doc(db, "conversations", activeChat.id), updateData);
+      await Promise.all([addMessagePromise, updateConvoPromise]);
     } catch (err) {
       console.error("Error sending message:", err);
     }
@@ -177,7 +178,7 @@ function InboxContent() {
     const otherUserId = activeChat.participants.find(id => id !== user.uid);
     const currentUnread = activeChat.unreadCount?.[otherUserId] || 0;
 
-    await addDoc(collection(db, "conversations", activeChat.id, "messages"), {
+    const addMessagePromise = addDoc(collection(db, "conversations", activeChat.id, "messages"), {
       text: "Sent a custom offer",
       senderId: user.uid,
       senderName: user.displayName || "User",
