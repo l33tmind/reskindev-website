@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Play } from "lucide-react";
+import { Play, Lock } from "lucide-react";
+import toast from "react-hot-toast";
 
 function getYoutubeId(url) {
   if (!url) return null;
@@ -29,6 +30,21 @@ export default function VideoGallery({ youtubeUrls, imageUrl, title }) {
   }
 
   const activeVideoId = getYoutubeId(youtubeUrls[activeIndex]);
+
+  const handleVideoSelect = (index) => {
+    if (index > 0) {
+      toast.error("Please purchase this service to unlock premium videos.", {
+        icon: '🔒',
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
+      return;
+    }
+    setActiveIndex(index);
+  };
 
   return (
     <div className="w-full mb-8">
@@ -58,19 +74,27 @@ export default function VideoGallery({ youtubeUrls, imageUrl, title }) {
             if (!ytId) return null;
             const thumbUrl = `https://img.youtube.com/vi/${ytId}/mqdefault.jpg`;
             const isActive = index === activeIndex;
+            const isLocked = index > 0;
 
             return (
               <button
                 key={index}
-                onClick={() => setActiveIndex(index)}
+                onClick={() => handleVideoSelect(index)}
                 className={`relative shrink-0 w-32 aspect-video rounded-xl overflow-hidden border-2 transition-all ${
-                  isActive ? "border-[#00C6A2] ring-2 ring-[#00C6A2]/20" : "border-transparent opacity-60 hover:opacity-100"
+                  isActive ? "border-[#00C6A2] ring-2 ring-[#00C6A2]/20" : "border-transparent opacity-80 hover:opacity-100"
                 }`}
               >
-                <img src={thumbUrl} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-                  <div className="w-8 h-8 rounded-full bg-white dark:bg-gray-900/30 backdrop-blur-sm flex items-center justify-center">
-                     <Play size={14} className="text-white fill-white ml-0.5" />
+                <img src={thumbUrl} alt={`Thumbnail ${index + 1}`} className={`w-full h-full object-cover ${isLocked ? 'blur-[2px]' : ''}`} />
+                <div className="absolute top-1 left-1 bg-black/70 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                  {index + 1}
+                </div>
+                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                  <div className={`w-8 h-8 rounded-full ${isLocked ? 'bg-red-500/80' : 'bg-white dark:bg-gray-900/30'} backdrop-blur-sm flex items-center justify-center`}>
+                     {isLocked ? (
+                       <Lock size={14} className="text-white" />
+                     ) : (
+                       <Play size={14} className="text-white fill-white ml-0.5" />
+                     )}
                   </div>
                 </div>
               </button>

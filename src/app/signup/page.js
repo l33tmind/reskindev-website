@@ -13,6 +13,7 @@ export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("buyer");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -27,7 +28,7 @@ export default function Signup() {
     setLoading(true);
     setError("");
     try {
-      await signupWithEmail(name, email, password);
+      await signupWithEmail(name, email, password, role);
       router.push("/");
     } catch (err) {
       setError(err.message || "Signup failed.");
@@ -37,7 +38,7 @@ export default function Signup() {
 
   const handleGoogleLogin = async () => {
     try {
-      await loginWithGoogle();
+      await loginWithGoogle(role);
       router.push("/");
     } catch (err) {
       setError("Google sign-in failed.");
@@ -60,6 +61,23 @@ export default function Signup() {
           </div>
 
           <form onSubmit={handleSignup} className="space-y-4">
+            <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-xl mb-6">
+              <button
+                type="button"
+                onClick={() => setRole("buyer")}
+                className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all ${role === "buyer" ? "bg-white dark:bg-gray-700 shadow-sm text-[#00C6A2]" : "text-gray-500"}`}
+              >
+                Join as Buyer
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("freelancer")}
+                className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all ${role === "freelancer" ? "bg-white dark:bg-gray-700 shadow-sm text-[#00C6A2]" : "text-gray-500"}`}
+              >
+                Join as Freelancer
+              </button>
+            </div>
+
             <div className="relative">
               <User size={18} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
               <input 

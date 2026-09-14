@@ -36,19 +36,19 @@ export default function AdminLayout({ children }) {
   const menuItems = [
     { name: "Overview", icon: LayoutDashboard, path: "/admin" },
     { name: "All Orders", icon: ListOrdered, path: "/admin/orders" },
-    { name: "Messages", icon: MessageSquare, path: "/admin/messages" },
     { name: "Users", icon: Users, path: "/admin/users" },
     { name: "Manage Services", icon: Briefcase, path: "/admin/services" },
+    { name: "Messages", icon: MessageSquare, path: "/admin/messages" },
     { name: "Manage Pages", icon: FileText, path: "/admin/pages" },
     { name: "Coupons", icon: Tag, path: "/admin/coupons" },
     { name: "Settings", icon: Settings, path: "/admin/settings" },
   ];
 
   return (
-    <div className="min-h-screen bg-[#F4F7F6] flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#F4F7F6] dark:bg-gray-950 flex flex-col md:flex-row">
       {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-white dark:bg-gray-900 border-r border-gray-200 flex-shrink-0">
-        <div className="h-16 flex items-center px-6 border-b border-gray-200">
+      <aside className="w-full md:w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-white/10 flex-shrink-0">
+        <div className="h-16 flex items-center px-6 border-b border-gray-200 dark:border-white/10">
           <Link href="/" className="font-extrabold text-lg text-gray-900 dark:text-white flex items-center gap-2">
             <img src="https://reskindev.com/favicon.png" className="h-6" alt="Logo" />
             Reskindev Admin
@@ -64,8 +64,8 @@ export default function AdminLayout({ children }) {
                   href={item.path}
                   className={`flex items-center gap-3 px-6 py-3 text-sm font-semibold transition-colors ${
                     isActive 
-                      ? "bg-[#E6F9F5] text-[#00C6A2] border-r-4 border-[#00C6A2]" 
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-950 hover:text-gray-900 dark:text-white"
+                      ? "bg-[#E6F9F5] dark:bg-[#00C6A2]/10 text-[#00C6A2] border-r-4 border-[#00C6A2]" 
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white"
                   }`}
                 >
                   <item.icon size={18} className={isActive ? "text-[#00C6A2]" : "text-gray-400"} />
@@ -80,7 +80,7 @@ export default function AdminLayout({ children }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
-        <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 flex items-center justify-between px-6 sticky top-0 z-10">
+        <header className="h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-white/10 flex items-center justify-between px-6 sticky top-0 z-10">
           <div className="flex-1" />
           <div className="flex items-center gap-6">
             <button className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-white">

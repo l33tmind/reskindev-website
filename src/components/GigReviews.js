@@ -25,31 +25,6 @@ export default function GigReviews({ gigId }) {
     return () => unsubscribe();
   }, [gigId]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!user) { toast.error("Please login to submit a review."); return; }
-    if (!comment.trim()) { toast.error("Please enter a comment."); return; }
-
-    setSubmitting(true);
-    try {
-      await addDoc(collection(db, "services", gigId, "reviews"), {
-        userId: user.uid,
-        userName: user.displayName || "Anonymous",
-        userImage: user.photoURL || `https://ui-avatars.com/api/?name=User`,
-        rating: rating,
-        comment: comment.trim(),
-        createdAt: serverTimestamp(),
-      });
-      setComment("");
-      setRating(5);
-      toast.success("Review submitted successfully!");
-    } catch (error) {
-      console.error("Error submitting review:", error);
-      toast.error("Failed to submit review.");
-    }
-    setSubmitting(false);
-  };
-
   const avgRating = reviews.length > 0 
     ? (reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length).toFixed(1) 
     : 0;
@@ -65,47 +40,6 @@ export default function GigReviews({ gigId }) {
           </span>
         )}
       </h2>
-
-      {/* Review Submission Form */}
-      {user ? (
-        <form onSubmit={handleSubmit} className="mb-10 bg-gray-50 dark:bg-gray-950 p-6 rounded-xl border border-gray-100">
-          <h3 className="font-bold text-gray-800 dark:text-gray-200 mb-3">Leave a Review</h3>
-          <div className="flex items-center gap-2 mb-4">
-            {[1, 2, 3, 4, 5].map(star => (
-              <button
-                key={star}
-                type="button"
-                onClick={() => setRating(star)}
-                className="focus:outline-none"
-              >
-                <Star 
-                  size={24} 
-                  className={star <= rating ? "text-amber-400 fill-amber-400" : "text-gray-300"} 
-                />
-              </button>
-            ))}
-          </div>
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            required
-            rows="3"
-            placeholder="Share your experience with this service..."
-            className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-[#00C6A2] mb-3"
-          />
-          <button 
-            type="submit" 
-            disabled={submitting}
-            className="bg-[#00C6A2] text-white px-6 py-2 rounded-lg font-bold hover:bg-[#00b08f] transition-colors disabled:opacity-50"
-          >
-            {submitting ? "Submitting..." : "Submit Review"}
-          </button>
-        </form>
-      ) : (
-        <div className="mb-10 bg-amber-50 p-4 rounded-xl border border-amber-200 text-amber-800 text-sm font-semibold">
-          Please sign in to leave a review.
-        </div>
-      )}
 
       {/* Reviews List */}
       <div className="space-y-6">

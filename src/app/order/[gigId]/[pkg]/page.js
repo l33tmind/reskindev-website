@@ -11,19 +11,26 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 
 export default function OrderPage({ params }) {
-  // Unwrap params using React.use() to avoid the async params warning in Next.js 15+ client components
-  const unwrappedParams = use(params);
-  const gigId = unwrappedParams.gigId;
-  const pkgName = unwrappedParams.pkg; // basic, standard, premium
+  // Safe unwrapping for both Next.js 14 (object) and Next.js 15+ (Promise)
+  const resolvedParams = params instanceof Promise ? use(params) : params;
+  const gigId = resolvedParams?.gigId || "unknown";
+  const pkgName = resolvedParams?.pkg || "basic";
 
   const { user } = useAuth();
   const router = useRouter();
 
   const [gig, setGig] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [requirements, setRequirements] = useState("");
+  
+      
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  const [couponCode, setCouponCode] = useState("");
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [couponError, setCouponError] = useState("");
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [appliedCouponId, setAppliedCouponId] = useState(null);
 
   useEffect(() => {
     async function fetchGig() {
@@ -40,15 +47,9 @@ export default function OrderPage({ params }) {
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   if (!gig) return <div className="min-h-screen flex items-center justify-center">Service not found.</div>;
 
-  const activeTabName = pkgName === 'basic' ? 'Basic' : pkgName === 'standard' ? 'Standard' : 'Premium';
-  const pkgData = (gig.packages || []).find(p => p.name === activeTabName) || {};
+  const activeTabName = decodeURIComponent(pkgName); // Handle space in URL
+  const pkgData = (gig.packages || []).find(p => p.name.toLowerCase() === activeTabName.toLowerCase()) || gig.packages?.[0] || {};
   const basePrice = pkgData.price || 0;
-  
-  const [couponCode, setCouponCode] = useState("");
-  const [discountAmount, setDiscountAmount] = useState(0);
-  const [couponError, setCouponError] = useState("");
-  const [applyingCoupon, setApplyingCoupon] = useState(false);
-  const [appliedCouponId, setAppliedCouponId] = useState(null);
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -82,27 +83,35 @@ export default function OrderPage({ params }) {
       toast.error("Please Sign In first to place an order.");
       return;
     }
-    if (!requirements.trim()) {
-      toast.error("Please provide order requirements.");
+    if (!requirements.trim() && !appLinks.trim()) {
+      toast.error("Please provide at least some project requirements or links.");
       return;
     }
 
     setSubmitting(true);
     try {
-      await addDoc(collection(db, "orders"), {
-        userId: user.uid,
-        userEmail: user.email,
-        userName: user.displayName,
-        gigId: gigId,
+      const orderData = {
+        gigId: id,
         gigTitle: gig.title,
-        packageName: pkgName,
+        packageId: activeTabName.toLowerCase(),
+        packageName: pkgData.name,
         price: finalPrice,
-        basePrice: basePrice,
-        discountAmount: discountAmount,
-        status: "pending", 
-        requirements: requirements,
+        basePrice: basePrice || 0,
+        discountAmount: discountAmount || 0,
+        status: "requirements", 
+        deliveryDays: pkgData.deliveryDays || 3,
+        userId: user.uid,
+        userName: user.displayName,
+        userEmail: user.email,
+        authorId: gig.authorId || "admin",
         createdAt: serverTimestamp(),
-      });
+      };
+
+      // Wrap in timeout to prevent infinite hang
+      const addDocPromise = addDoc(collection(db, "orders"), orderData);
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout: Order took too long to place")), 10000));
+      
+      await Promise.race([addDocPromise, timeoutPromise]);
       
       // Update coupon usage count if one was applied
       if (appliedCouponId) {
@@ -116,9 +125,10 @@ export default function OrderPage({ params }) {
       setSuccess(true);
     } catch (error) {
       console.error("Order failed:", error);
-      toast.error("Failed to place order. Try again.");
+      toast.error(error.message === "Network timeout: Order took too long to place" ? "Network timeout. Please check your connection." : "Failed to place order. Try again.");
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   };
 
   if (success) {
@@ -149,7 +159,7 @@ export default function OrderPage({ params }) {
           {/* Order Form */}
           <div className="md:col-span-2">
             <div className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-200 shadow-sm">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Order Requirements</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Complete Purchase</h2>
               {!user && (
                 <div className="bg-amber-50 text-amber-800 p-4 rounded-lg mb-6 text-sm font-semibold border border-amber-200">
                   ⚠️ You need to sign in using the top-right button before submitting.
@@ -166,17 +176,13 @@ export default function OrderPage({ params }) {
               </div>
 
               <form onSubmit={handleOrder}>
-                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
-                  Please provide all necessary details for this order (App links, credentials, specifics):
-                </label>
-                <textarea
-                  required
-                  rows="6"
-                  value={requirements}
-                  onChange={(e) => setRequirements(e.target.value)}
-                  className="w-full border border-gray-300 rounded-xl p-4 focus:ring-2 focus:ring-[#00C6A2] focus:border-transparent outline-none mb-6"
-                  placeholder="I need..."
-                />
+                <div className="space-y-4 mb-6">
+                  <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-white/10 text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto text-[#00C6A2] mb-4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    <h3 className="font-bold text-gray-900 dark:text-white mb-2">Submit Requirements Later</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">After placing your order, you will be directed to a dedicated page to securely submit your project files, links, and detailed requirements.</p>
+                  </div>
+                </div>
                 
                 <button 
                   type="submit" 

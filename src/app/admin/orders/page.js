@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, query, orderBy, getDocs, doc, updateDoc } from "firebase/firestore";
+import { collection, query, orderBy, getDocs, doc, updateDoc, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { Package, Search, ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -10,6 +10,8 @@ export default function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [pendingStatuses, setPendingStatuses] = useState({});
+  const [savingStatusId, setSavingStatusId] = useState(null);
 
   useEffect(() => {
     fetchOrders();
@@ -28,17 +30,50 @@ export default function AdminOrders() {
 
   const updateStatus = async (orderId, newStatus) => {
     try {
+      const order = orders.find(o => o.id === orderId);
       await updateDoc(doc(db, "orders", orderId), { status: newStatus });
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+      
+      // Notify the buyer
+      if (order && order.userId) {
+        await addDoc(collection(db, "notifications"), {
+          userId: order.userId,
+          message: `Your order for "${order.gigTitle}" is now marked as: ${newStatus.toUpperCase()}`,
+          read: false,
+          createdAt: serverTimestamp()
+        });
+      }
     } catch (e) {
       alert("Failed to update status.");
     }
   };
 
+  const handleStatusSelect = (orderId, value) => {
+    setPendingStatuses(prev => ({ ...prev, [orderId]: value }));
+  };
+
+  const handleStatusSave = async (orderId) => {
+    const newStatus = pendingStatuses[orderId];
+    if (!newStatus) return;
+    
+    setSavingStatusId(orderId);
+    await updateStatus(orderId, newStatus);
+    
+    setPendingStatuses(prev => {
+      const next = { ...prev };
+      delete next[orderId];
+      return next;
+    });
+    setSavingStatusId(null);
+  };
+
   const filteredOrders = orders.filter(o => 
-    o.gigTitle?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    o.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    o.userEmail?.toLowerCase().includes(searchTerm.toLowerCase())
+    (searchTerm === 'disputed' ? o.status === 'disputed' : true) &&
+    (searchTerm === 'disputed' ? true : (
+      o.gigTitle?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      o.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      o.userEmail?.toLowerCase().includes(searchTerm.toLowerCase())
+    ))
   );
 
   if (loading) return <div>Loading orders...</div>;
@@ -49,7 +84,8 @@ export default function AdminOrders() {
         <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white flex items-center gap-2">
           <Package size={28} className="text-[#00C6A2]" /> Client Orders
         </h1>
-        <div className="relative w-full md:w-64">
+        <div className="flex gap-4">
+          <div className="relative w-full md:w-64">
           <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input 
             type="text" 
@@ -58,6 +94,14 @@ export default function AdminOrders() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#00C6A2]"
           />
+        </div>
+        <select 
+          onChange={(e) => setSearchTerm(e.target.value === 'disputed' ? 'disputed' : '')}
+          className="border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-[#00C6A2] font-bold text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+        >
+          <option value="">All Orders</option>
+          <option value="disputed">⚠️ Disputes</option>
+        </select>
         </div>
       </div>
 
@@ -99,20 +143,40 @@ export default function AdminOrders() {
                       {order.createdAt?.toDate ? order.createdAt.toDate().toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4">
-                      <select
-                        value={order.status || 'pending'}
-                        onChange={(e) => updateStatus(order.id, e.target.value)}
-                        className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded outline-none cursor-pointer border ${
-                          order.status === 'completed' ? 'bg-green-50 text-green-700 border-green-200' :
-                          order.status === 'processing' ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                          'bg-amber-50 text-amber-700 border-amber-200'
-                        }`}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="processing">Processing</option>
-                        <option value="completed">Completed</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={pendingStatuses[order.id] || order.status || 'pending'}
+                          onChange={(e) => handleStatusSelect(order.id, e.target.value)}
+                          className={`text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full outline-none cursor-pointer ${
+                            (pendingStatuses[order.id] || order.status) === 'completed' ? 'bg-green-100 text-green-700 border border-green-200' :
+                            (pendingStatuses[order.id] || order.status) === 'processing' || (pendingStatuses[order.id] || order.status) === 'review' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
+                            ['cancelled', 'cancel_requested_by_buyer', 'cancel_requested_by_freelancer', 'disputed'].includes(pendingStatuses[order.id] || order.status) ? 'bg-red-100 text-red-700 border border-red-200' :
+                            ['delivered'].includes(pendingStatuses[order.id] || order.status) ? 'bg-purple-100 text-purple-700 border border-purple-200' :
+                            'bg-amber-100 text-amber-700 border border-amber-200'
+                          }`}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="requirements">Requirements</option>
+                          <option value="processing">Processing</option>
+                          <option value="revision">Revision</option>
+                          <option value="delivered">Delivered</option>
+                          <option value="completed">Completed</option>
+                          <option value="cancel_requested_by_buyer">Cancel Req (Buyer)</option>
+                          <option value="cancel_requested_by_freelancer">Cancel Req (Seller)</option>
+                          <option value="disputed">Disputed ⚠️</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
+
+                        {pendingStatuses[order.id] && pendingStatuses[order.id] !== order.status && (
+                          <button
+                            onClick={() => handleStatusSave(order.id)}
+                            disabled={savingStatusId === order.id}
+                            className="bg-[#00C6A2] hover:bg-[#00b08f] text-white px-3 py-1 rounded-lg text-xs font-bold transition-colors shadow-sm disabled:opacity-50 whitespace-nowrap"
+                          >
+                            {savingStatusId === order.id ? '...' : 'Save'}
+                          </button>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button 

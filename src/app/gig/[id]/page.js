@@ -3,6 +3,7 @@ import { db } from "@/lib/firebase";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import PricingCard from "@/components/PricingCard";
+import ContactSellerButton from "@/components/ContactSellerButton";
 import { ArrowLeft, Heart, MessageCircle } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
 import SaveButton from "@/components/SaveButton";
@@ -68,27 +69,73 @@ export default async function GigDetail({ params }) {
   
   const videoUrls = gig.youtubeUrls?.length > 0 ? gig.youtubeUrls : (gig.youtubeUrl ? [gig.youtubeUrl] : []);
 
+  let authorUsername = "";
+  let authorPic = gig.authorImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(gig.authorName || "Admin")}&background=00C6A2&color=fff`;
+  try {
+     const authorDoc = await getDoc(doc(db, "users", gig.authorId || "admin"));
+     if (authorDoc.exists()) {
+       authorUsername = authorDoc.data().username || "";
+       if (authorDoc.data().photoURL) {
+         authorPic = authorDoc.data().photoURL;
+       }
+     }
+  } catch(e) {
+     console.error("Error fetching author data:", e);
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pb-20">
       <Navbar />
 
       <div className="max-w-6xl mx-auto px-4 md:px-8 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-4">
-            <Link href="/" className="p-2 bg-white dark:bg-gray-900 rounded-full border border-gray-200 hover:bg-gray-50 dark:bg-gray-950 transition-colors shadow-sm">
+        {/* Responsive Header Section */}
+        <div className="mb-6 md:mb-8 flex flex-col gap-2 md:gap-6">
+          
+          {/* Mobile Top Controls */}
+          <div className="flex justify-between items-center md:hidden w-full mb-2">
+            <Link href="/" className="p-2 bg-white dark:bg-gray-900 rounded-full border border-gray-200 hover:bg-gray-50 dark:bg-gray-950 transition-colors shadow-sm shrink-0">
               <ArrowLeft size={20} className="text-gray-600 dark:text-gray-400" />
             </Link>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white leading-tight">
-              {gig.title}
-            </h1>
+            <div className="flex items-center gap-2 shrink-0">
+              <ShareButton />
+              <SaveButton gigId={id} />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <ShareButton />
-            <SaveButton gigId={id} />
+
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex items-start gap-4 flex-1">
+              {/* Desktop Back Button */}
+              <Link href="/" className="hidden md:flex p-2 bg-white dark:bg-gray-900 rounded-full border border-gray-200 hover:bg-gray-50 dark:bg-gray-950 transition-colors shadow-sm shrink-0 h-10 w-10 items-center justify-center mt-1">
+                <ArrowLeft size={20} className="text-gray-600 dark:text-gray-400" />
+              </Link>
+              
+              <div className="flex-1 space-y-5">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-900 dark:text-white leading-tight">
+                  {gig.title}
+                </h1>
+                
+                {/* Author Info */}
+                <div className="flex items-center gap-3">
+                   <img src={authorPic} alt="Author" className="w-10 h-10 rounded-full object-cover border border-gray-200 shadow-sm" />
+                   <div>
+                     <p className="text-sm font-bold text-gray-900 dark:text-white">{gig.authorName || "Admin"}</p>
+                     {authorUsername && (
+                       <Link href={`/${authorUsername}`} className="text-xs text-[#00C6A2] font-bold hover:underline">
+                         @{authorUsername}
+                       </Link>
+                     )}
+                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Share/Save */}
+            <div className="hidden md:flex items-center gap-2 shrink-0 mt-1">
+              <ShareButton />
+              <SaveButton gigId={id} />
+            </div>
           </div>
         </div>
-        
-        <p className="text-gray-500 dark:text-gray-400 text-sm mb-8">Review gig features, previews, and select your custom package</p>
         
         <div className="flex flex-col lg:flex-row gap-8 items-start">
           {/* Left Column: Media & Description */}
@@ -116,15 +163,24 @@ export default async function GigDetail({ params }) {
           <div className="w-full lg:w-[400px] sticky top-24">
             <PricingCard gig={gig} gigId={id} />
             
-            <a 
-              href={`https://wa.me/${gig.whatsappNumber?.replace(/[^0-9]/g, "") || ""}?text=Hi!%20I'm%20interested%20in%20your%20gig:%20${encodeURIComponent(gig.title)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 w-full bg-white dark:bg-gray-900 border-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2"
-            >
-              <MessageCircle size={20} />
-              Contact Seller Directly
-            </a>
+            <ContactSellerButton 
+              authorId={gig.authorId || "admin"} 
+              authorName={gig.authorName || "Admin"} 
+              gigId={id} 
+              gigTitle={gig.title} 
+            />
+
+            {gig.whatsappNumber && (
+              <a 
+                href={`https://wa.me/${String(gig.whatsappNumber).replace(/[^0-9]/g, "")}?text=Hi!%20I'm%20interested%20in%20your%20gig:%20${encodeURIComponent(gig.title)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 w-full bg-white dark:bg-gray-900 border-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2"
+              >
+                <MessageCircle size={20} />
+                WhatsApp Direct
+              </a>
+            )}
           </div>
         </div>
       </div>

@@ -27,7 +27,7 @@ export default function UserProfile({ params }) {
         }
         
         const snap = await getDocs(q);
-        setGigs(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        setGigs(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => (a.order || 0) - (b.order || 0)));
       } catch (e) {
         console.error("Error fetching user gigs:", e);
       }

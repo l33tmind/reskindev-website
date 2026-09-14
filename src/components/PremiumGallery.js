@@ -61,7 +61,7 @@ export default function PremiumGallery({ images, unlockPrice }) {
               <button 
                 onClick={handleUnlock}
                 disabled={unlocking}
-                className="w-full bg-[#00C6A2] hover:bg-[#00b08f] text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                className="w-full bg-[#00C6A2] hover:bg-[#00b08f] text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-md hover:shadow-lg neon-glow flex items-center justify-center gap-2"
               >
                 {unlocking ? "Processing..." : (
                   <>

@@ -3,11 +3,15 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { StaggerContainer, StaggerItem } from "./ClientMotion";
 
 export default function ServiceGrid({ gigs }) {
   const router = useRouter();
-  const [search, setSearch] = useState("");
+  const searchParams = useSearchParams();
+  const initialSearch = searchParams.get("q") || "";
+  
+  const [search, setSearch] = useState(initialSearch);
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const categories = ["All", "Mobile Apps", "Web Dev", "Marketing", "UI/UX", "Others"];
@@ -70,7 +74,7 @@ export default function ServiceGrid({ gigs }) {
       </div>
       
       {/* Services Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <StaggerContainer key={selectedCategory + search} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredGigs.map(gig => {
           const ytId = extractYouTubeId(gig.youtubeUrl);
           const coverImage = ytId 
@@ -82,46 +86,48 @@ export default function ServiceGrid({ gigs }) {
             : 0;
 
           return (
-            <Link key={gig.id} href={`/gig/${gig.id}/${gig.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
-              <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer h-full flex flex-col group">
-                <div className="w-full h-48 relative overflow-hidden bg-gray-100 dark:bg-gray-800">
-                  {coverImage ? (
-                    <img src={coverImage} alt={gig.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
-                  )}
-                </div>
-                <div className="p-5 flex flex-col flex-1">
-                  <div 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      router.push(`/user/${gig.authorId || 'admin'}`);
-                    }}
-                    className="flex items-center gap-2 mb-3 cursor-pointer hover:opacity-80 transition-opacity w-fit z-10"
-                  >
-                    <img 
-                      src={gig.authorImage || "https://ui-avatars.com/api/?name=MD+Robius+Sany&background=00C6A2&color=fff"} 
-                      alt={gig.authorName || "MD Robius Sany"} 
-                      className="w-6 h-6 rounded-full object-cover border border-gray-200"
-                    />
-                    <span className="text-[12px] font-bold text-gray-700 dark:text-gray-300 hover:text-[#00C6A2]">
-                      {gig.authorName || "MD Robius Sany"}
-                    </span>
+            <StaggerItem key={gig.id}>
+              <Link href={`/gig/${gig.id}/${(gig.title || 'service').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
+                <div className="bg-white dark:bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,198,162,0.15)] transition-all duration-300 cursor-pointer h-full flex flex-col group">
+                  <div className="w-full aspect-video relative overflow-hidden bg-gray-100 dark:bg-gray-800">
+                    {coverImage ? (
+                      <img src={coverImage} alt={gig.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">No Image</div>
+                    )}
                   </div>
-                  <h3 className="font-bold text-gray-900 dark:text-white mb-2 text-[15px] leading-snug line-clamp-2 flex-1 group-hover:text-[#00C6A2] transition-colors">
-                    {gig.title}
-                  </h3>
-                  
-                  <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Starting at</div>
-                    <div className="font-black text-xl text-gray-900 dark:text-white">
-                      ${startingPrice}
+                  <div className="p-5 flex flex-col flex-1">
+                    <div 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(gig.authorUsername ? `/${gig.authorUsername}` : `/user/${gig.authorId || 'admin'}`);
+                      }}
+                      className="flex items-center gap-2 mb-3 cursor-pointer hover:opacity-80 transition-opacity w-fit z-10"
+                    >
+                      <img 
+                        src={gig.authorImage || "https://ui-avatars.com/api/?name=MD+Robius+Sany&background=00C6A2&color=fff"} 
+                        alt={gig.authorName || "MD Robius Sany"} 
+                        className="w-6 h-6 rounded-full object-cover border border-gray-200"
+                      />
+                      <span className="text-[12px] font-bold text-gray-700 dark:text-gray-300 hover:text-[#00C6A2]">
+                        {gig.authorName || "MD Robius Sany"}
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-gray-900 dark:text-white mb-2 text-[15px] leading-snug line-clamp-2 flex-1 group-hover:text-[#00C6A2] transition-colors">
+                      {gig.title}
+                    </h3>
+                    
+                    <div className="mt-4 pt-4 border-t border-gray-100 dark:border-white/5 flex items-center justify-between">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">Starting at</div>
+                      <div className="font-black text-xl text-gray-900 dark:text-white">
+                        ${startingPrice}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            </StaggerItem>
           );
         })}
         
@@ -130,7 +136,7 @@ export default function ServiceGrid({ gigs }) {
             No services found matching your criteria.
           </div>
         )}
-      </div>
+      </StaggerContainer>
     </>
   );
 }

@@ -63,8 +63,8 @@ export default function SavedServices() {
 
             return (
               <Link key={gig.id} href={`/gig/${gig.id}/${gig.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
-                <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer h-full flex flex-col group">
-                  <div className="w-full h-48 relative overflow-hidden bg-gray-100 dark:bg-gray-800">
+                <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-white/10 overflow-hidden shadow-sm hover:shadow-xl transition-all cursor-pointer h-full flex flex-col group">
+                  <div className="w-full aspect-video relative overflow-hidden bg-gray-100 dark:bg-gray-800">
                     {coverImage ? (
                       <img src={coverImage} alt={gig.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     ) : (
@@ -79,7 +79,7 @@ export default function SavedServices() {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        router.push(`/user/${gig.authorId || 'admin'}`);
+                        router.push(gig.authorUsername ? `/${gig.authorUsername}` : `/user/${gig.authorId || 'admin'}`);
                       }}
                       className="flex items-center gap-2 mb-3 cursor-pointer hover:opacity-80 transition-opacity w-fit z-10"
                     >
@@ -95,7 +95,7 @@ export default function SavedServices() {
                     <h3 className="font-bold text-gray-900 dark:text-white mb-2 text-[15px] leading-snug line-clamp-2 flex-1 group-hover:text-green-600 transition-colors">
                       {gig.title}
                     </h3>
-                    <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                    <div className="mt-4 pt-4 border-t border-gray-100 dark:border-white/10 flex items-center justify-between">
                       <div className="text-xs text-gray-500 dark:text-gray-400">Starting at</div>
                       <div className="font-black text-xl text-gray-900 dark:text-white">
                         ${startingPrice}

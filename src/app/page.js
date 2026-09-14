@@ -4,8 +4,12 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { Search, Bell, Menu } from "lucide-react";
 import ServiceGrid from "@/components/ServiceGrid";
+import { FadeInUp } from "@/components/ClientMotion";
+import { Suspense } from "react";
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+export const revalidate = 0;
 
 async function getSettings() {
   try {
@@ -28,7 +32,7 @@ async function getGigs() {
         createdAt: data.createdAt?.toDate?.()?.toISOString() || null,
         updatedAt: data.updatedAt?.toDate?.()?.toISOString() || null,
       };
-    });
+    }).filter(gig => gig.status !== 'pending').sort((a, b) => (a.order || 0) - (b.order || 0));
   } catch (e) {
     console.error(e);
   }
@@ -58,55 +62,68 @@ export default async function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <div className="w-full bg-gradient-to-r from-[#0d2621] to-[#1b2b36] py-16 px-4 md:px-8 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-10">
+      <div className="w-full bg-[#0d2621] dark:bg-[#081311] py-16 px-4 md:px-8 relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-30"></div>
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-[#00C6A2] rounded-full blur-[150px] opacity-20"></div>
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-blue-500 rounded-full blur-[150px] opacity-20"></div>
+
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-10 relative z-10">
           
           {/* Left Text & App Banner */}
-          <div className="flex-1 text-left">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 font-outfit flex items-center gap-3">
-              <span className="text-blue-500 text-4xl">🚀</span> {heroTitle}
+          <FadeInUp className="flex-1 text-left">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 font-outfit flex items-center gap-3">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#00C6A2] to-blue-500 pb-2">
+                {heroTitle}
+              </span>
             </h1>
-            <p className="text-base md:text-lg text-white/90 max-w-xl leading-relaxed mb-10">
+            <p className="text-base md:text-lg text-white/90 max-w-xl leading-relaxed mb-8">
               {heroDescription}
             </p>
             
+
+            
             {/* Featured App Card */}
-            <div className="bg-white dark:bg-gray-900/10 backdrop-blur-md border border-white/20 rounded-xl p-4 max-w-md flex items-center gap-4">
+            <div className="bg-white/10 dark:bg-black/30 backdrop-blur-md border border-white/20 rounded-xl p-4 max-w-md flex items-center gap-4 hover:-translate-y-1 transition-transform shadow-xl">
               <img src={featuredAppIcon} alt={featuredAppName} className="w-12 h-12 rounded-lg shadow-md" />
               <div className="flex-1">
                 <h3 className="text-white font-bold text-sm line-clamp-1">{featuredAppName}</h3>
                 <p className="text-white/70 text-xs">Developer: {featuredAppDev}</p>
                 <p className="text-white/70 text-xs">Free</p>
               </div>
-              <a href={featuredAppUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center bg-white dark:bg-gray-900/20 hover:bg-white dark:bg-gray-900/30 p-2 rounded-lg transition">
+              <a href={featuredAppUrl} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center justify-center bg-white/20 dark:bg-white/10 hover:bg-white/30 dark:hover:bg-white/20 p-2 rounded-lg transition">
                 <svg className="w-6 h-6 text-white mb-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 <span className="text-[10px] text-white font-semibold">Download</span>
               </a>
             </div>
-          </div>
+          </FadeInUp>
 
           {/* Right Video Player */}
-          <div className="flex-1 w-full max-w-2xl">
+          <FadeInUp delay={0.2} className="flex-1 w-full max-w-2xl">
             {videoId && (
-              <div className="aspect-video w-full rounded-2xl overflow-hidden shadow-2xl border-4 border-white/10">
+              <div className="aspect-video w-full rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(0,198,162,0.3)] border-4 border-white/10 group">
                 <iframe 
                   src={`https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0`} 
-                  className="w-full h-full"
+                  className="w-full h-full group-hover:scale-105 transition-transform duration-700"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen 
                 />
               </div>
             )}
-          </div>
+          </FadeInUp>
         </div>
       </div>
+
+
 
       {/* Services Section */}
       <div className="py-12 px-4 md:px-8 max-w-7xl mx-auto">
         <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 dark:text-white mb-2 font-outfit">Explore Services</h2>
         <p className="text-gray-500 dark:text-gray-400 mb-8 text-lg">Find the best services for your next project</p>
         
-        <ServiceGrid gigs={gigs} />
+        <Suspense fallback={<div className="py-20 text-center">Loading services...</div>}>
+          <ServiceGrid gigs={gigs} />
+        </Suspense>
       </div>
 
       {/* App Promo Footer Section */}

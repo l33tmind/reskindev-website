@@ -7,6 +7,7 @@ import { db } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Plus, Trash2, Video, Star, Image as ImageIcon, Play, Tag } from "lucide-react";
 import toast from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
 
 const extractYouTubeId = (url) => {
   if (!url) return null;
@@ -15,7 +16,7 @@ const extractYouTubeId = (url) => {
 };
 
 export default function EditService({ params }) {
-  const resolvedParams = use(params);
+  const resolvedParams = params instanceof Promise ? use(params) : params;
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -137,16 +138,31 @@ export default function EditService({ params }) {
     });
   };
 
+  const { user, dbUser } = useAuth();
+
   const handleSave = async () => {
     setSaving(true);
     try {
-      if (resolvedParams.id === "new") {
+      const isNew = resolvedParams.id === "new";
+      const savePayload = { ...service };
+      
+      if (isNew && user) {
+        savePayload.authorId = user.uid;
+        savePayload.authorName = user.displayName || "Unknown Seller";
+        savePayload.authorImage = user.photoURL || `https://ui-avatars.com/api/?name=${user.displayName}`;
+        savePayload.status = dbUser?.role === "admin" ? "active" : "pending";
+        savePayload.createdAt = new Date();
+      }
+      
+      savePayload.updatedAt = new Date();
+
+      if (isNew) {
         const newId = Date.now().toString();
-        await setDoc(doc(db, "services", newId), service);
-        toast.success("Service created successfully!");
-        router.push("/admin/services");
+        await setDoc(doc(db, "services", newId), savePayload);
+        toast.success(dbUser?.role === "admin" ? "Service created!" : "Service submitted for approval!");
+        router.push(dbUser?.role === "admin" ? "/admin/services" : "/freelancer");
       } else {
-        await setDoc(doc(db, "services", resolvedParams.id), service, { merge: true });
+        await setDoc(doc(db, "services", resolvedParams.id), savePayload, { merge: true });
         toast.success("Service updated successfully!");
       }
     } catch (error) {
@@ -194,7 +210,7 @@ export default function EditService({ params }) {
           <div className="p-6 border-b border-gray-100 flex justify-between items-center">
             <div>
               <h2 className="text-lg font-bold text-gray-900 dark:text-white">Video / Image Gallery</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Paste a YouTube link OR image URL. YouTube thumbnails will auto-generate.</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Upload video to YouTube as <strong>"Unlisted"</strong> and paste the link here. Thumbnails will auto-generate.</p>
             </div>
             <button onClick={addYoutubeUrl} className="bg-[#1C2C26] hover:bg-[#2A4038] text-white px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors">
               <Plus size={16} /> Add Video / Image
@@ -294,10 +310,43 @@ export default function EditService({ params }) {
         
         {/* Packages Configuration */}
         <div className="bg-white dark:bg-gray-900 p-8 rounded-2xl border border-gray-200 shadow-sm">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Pricing Packages</h2>
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Pricing Packages</h2>
+            {service.packages.length < 3 && (
+              <button 
+                onClick={() => {
+                  const availableNames = ["Basic", "Standard", "Premium"];
+                  const currentNames = service.packages.map(p => p.name);
+                  const nextName = availableNames.find(n => !currentNames.includes(n)) || `Package ${service.packages.length + 1}`;
+                  setService(prev => ({
+                    ...prev,
+                    packages: [...prev.packages, { name: nextName, price: 0, description: "", deliveryDays: 3, featureChecks: prev.masterFeatures?.map(()=>false) || [] }]
+                  }));
+                }}
+                className="px-4 py-1.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-bold text-sm rounded-lg hover:bg-green-200 transition-colors"
+              >
+                + Add Package
+              </button>
+            )}
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {service.packages.map((pkg, pIndex) => (
-              <div key={pkg.name} className="border border-gray-200 rounded-xl bg-gray-50 dark:bg-gray-950 overflow-hidden flex flex-col">
+              <div key={pIndex} className="border border-gray-200 rounded-xl bg-gray-50 dark:bg-gray-950 overflow-hidden flex flex-col relative group">
+                {service.packages.length > 1 && (
+                  <button 
+                    onClick={() => {
+                      setService(prev => {
+                        const newPackages = [...prev.packages];
+                        newPackages.splice(pIndex, 1);
+                        return { ...prev, packages: newPackages };
+                      });
+                    }}
+                    className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                    title="Delete Package"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                )}
                 <div className={`p-4 text-center font-black text-lg text-white ${
                   pkg.name === 'Basic' ? 'bg-slate-700' : pkg.name === 'Standard' ? 'bg-[#00C6A2]' : 'bg-amber-500'
                 }`}>
@@ -332,9 +381,11 @@ export default function EditService({ params }) {
               <thead className="text-[10px] font-black uppercase text-gray-500 dark:text-gray-400 tracking-wider border-b border-gray-100">
                 <tr>
                   <th className="p-4 w-1/2">Feature Description</th>
-                  <th className="p-4 text-center text-[#00C6A2]">Basic</th>
-                  <th className="p-4 text-center text-blue-500">Standard</th>
-                  <th className="p-4 text-center text-amber-500">Premium</th>
+                  {service.packages.map((pkg, i) => (
+                    <th key={i} className={`p-4 text-center ${
+                      pkg.name === 'Basic' ? 'text-slate-700 dark:text-slate-400' : pkg.name === 'Standard' ? 'text-[#00C6A2]' : 'text-amber-500'
+                    }`}>{pkg.name}</th>
+                  ))}
                   <th className="p-4 w-10"></th>
                 </tr>
               </thead>
@@ -342,8 +393,8 @@ export default function EditService({ params }) {
                 {service.masterFeatures.map((feat, fIndex) => (
                   <tr key={fIndex} className="hover:bg-gray-50 dark:bg-gray-950 transition-colors">
                     <td className="p-4 text-sm text-gray-700 dark:text-gray-300">{feat}</td>
-                    {[0, 1, 2].map((pIndex) => {
-                      const isChecked = service.packages[pIndex]?.featureChecks?.[fIndex] || false;
+                    {service.packages.map((pkg, pIndex) => {
+                      const isChecked = pkg.featureChecks?.[fIndex] || false;
                       return (
                         <td key={pIndex} className="p-4 text-center">
                           <button 
