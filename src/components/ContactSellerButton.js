@@ -13,13 +13,6 @@ export default function ContactSellerButton({ authorId, authorName, gigId, gigTi
   const { user } = useAuth();
   const router = useRouter();
 
-  const withTimeout = (promise, ms, name) => {
-    return Promise.race([
-      promise,
-      new Promise((_, reject) => setTimeout(() => reject(new Error(name + " timed out after " + ms + "ms")), ms))
-    ]);
-  };
-
 
   const handleContact = async () => {
     if (!user) {
@@ -40,7 +33,7 @@ export default function ContactSellerButton({ authorId, authorName, gigId, gigTi
         where("participants", "array-contains", user.uid)
       );
       
-      const snap = await withTimeout(getDocs(q), 5000, "getDocs");
+      const snap = await getDocs(q);
       let existingChatId = null;
       
       snap.docs.forEach(doc => {
@@ -53,7 +46,7 @@ export default function ContactSellerButton({ authorId, authorName, gigId, gigTi
       let chatId = existingChatId;
 
       if (!existingChatId) {
-        const newChat = await withTimeout(addDoc(collection(db, "conversations"), {
+        const newChat = await addDoc(collection(db, "conversations"), {
           participants: [user.uid, authorId],
           participantDetails: {
             [user.uid]: { name: user.displayName || "User" },
@@ -62,30 +55,33 @@ export default function ContactSellerButton({ authorId, authorName, gigId, gigTi
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
           lastMessage: ""
-        }), 5000, "addDoc conversation");
+        });
         chatId = newChat.id;
       }
 
-      // If clicked from a gig, send a reference message automatically
+            // If clicked from a gig, send a reference message automatically
       if (gigId && gigTitle) {
-        const msgText = `Hi! I'm interested in your service:\n${gigTitle}\nhttps://reskindev.com/gig/${gigId}`;
+        const msgText = `Hi! I'm interested in your service:
+${gigTitle}
+https://reskindev.com/gig/${gigId}`;
         
-        await withTimeout(addDoc(collection(db, "conversations", chatId, "messages"), {
+        // Execute writes in the background without awaiting
+        addDoc(collection(db, "conversations", chatId, "messages"), {
           text: msgText,
           senderId: user.uid,
           senderName: user.displayName || "User",
           createdAt: serverTimestamp(),
           type: "text"
-        }), 5000, "addDoc messages");
+        }).catch(err => console.error("Background addDoc error:", err));
 
-        await withTimeout(updateDoc(doc(db, "conversations", chatId), {
+        updateDoc(doc(db, "conversations", chatId), {
           lastMessage: `Interested in: ${gigTitle}`,
           updatedAt: serverTimestamp(),
           [`unreadCount.${authorId}`]: increment(1)
-        }), 5000, "updateDoc conversation");
+        }).catch(err => console.error("Background updateDoc error:", err));
       }
 
-      window.location.href = `/inbox?chat=${chatId}`;
+      router.push(`/inbox?chat=${chatId}`);
     } catch (error) {
       console.error(error);
       toast.error("Error: " + (error.message || "Unknown failed"));
