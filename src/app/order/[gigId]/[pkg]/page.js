@@ -110,7 +110,7 @@ export default function OrderPage({ params }) {
 
       // Wrap in timeout to prevent infinite hang
       const addDocPromise = addDoc(collection(db, "orders"), orderData);
-      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout: Order took too long to place")), 10000));
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Network timeout: Order took too long to place. Please check your internet connection.")), 10000));
       
       await Promise.race([addDocPromise, timeoutPromise]);
       
