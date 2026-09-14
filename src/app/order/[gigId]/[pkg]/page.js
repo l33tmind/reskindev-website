@@ -101,7 +101,7 @@ export default function OrderPage({ params }) {
         userName: user.displayName || "Client",
         userEmail: user.email || "",
         authorId: gig.authorId || "admin",
-        createdAt: serverTimestamp(),
+        createdAt: new Date(),
       };
       
       // Sanitize undefined
@@ -126,7 +126,7 @@ export default function OrderPage({ params }) {
       setSuccess(true);
     } catch (error) {
       console.error("Order failed:", error);
-      toast.error(error.message === "Network timeout: Order took too long to place" ? "Network timeout. Please check your connection." : "Failed to place order. Try again.");
+      toast.error("Order Error: " + error.message);
     } finally {
       setSubmitting(false);
     }
