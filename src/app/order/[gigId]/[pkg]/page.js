@@ -83,10 +83,6 @@ export default function OrderPage({ params }) {
       toast.error("Please Sign In first to place an order.");
       return;
     }
-    if (!requirements.trim() && !appLinks.trim()) {
-      toast.error("Please provide at least some project requirements or links.");
-      return;
-    }
 
     setSubmitting(true);
     try {
