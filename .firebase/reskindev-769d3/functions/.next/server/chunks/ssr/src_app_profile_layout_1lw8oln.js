@@ -1,3 +1,0 @@
-module.exports=[51795,a=>{"use strict";a.s(["default",()=>b]);let b=(0,a.i(11857).registerClientReference)(function(){throw Error("Attempted to call the default export of [project]/src/app/profile/layout.js from the server, but it's on the client. It's not possible to invoke a client function from the server, it can only be rendered as a Component or passed to props of a Client Component.")},"[project]/src/app/profile/layout.js","default")},1409,a=>{"use strict";var b=a.i(51795);a.n(b)},72371,function(a){a.n(a.i(1409))}];
-
-//# sourceMappingURL=src_app_profile_layout_1lw8oln.js.map

@@ -1,7 +1,0 @@
-User-Agent: *
-Allow: /
-Disallow: /admin/
-Disallow: /profile/
-Disallow: /order/
-
-Sitemap: https://reskindev.com/sitemap.xml
