@@ -162,10 +162,10 @@ export default async function Home() {
               scrollbar-width: none;
             }
           `}} />
-          <div className="flex w-[200%] animate-slide-left gap-6 px-6">
+          <div className="flex w-max animate-slide-left gap-6 px-6">
             
             {/* Group 1 (Original 4) */}
-            <div className="flex gap-6 w-1/2 justify-around">
+            <div className="flex gap-6 shrink-0">
               <AppScreenshot title="Hire Professional Freelancer" type="list" />
               <AppScreenshot title="Transform your ideas" type="grid" />
               <AppScreenshot title="Hire a Pro Video Editor" type="detail" />
@@ -173,7 +173,7 @@ export default async function Home() {
             </div>
             
             {/* Group 2 (Duplicate for infinite loop) */}
-            <div className="flex gap-6 w-1/2 justify-around">
+            <div className="flex gap-6 shrink-0">
               <AppScreenshot title="Hire Professional Freelancer" type="list" />
               <AppScreenshot title="Transform your ideas" type="grid" />
               <AppScreenshot title="Hire a Pro Video Editor" type="detail" />
