@@ -81,7 +81,7 @@ export default function Navbar() {
   return (
     <nav className="h-[64px] bg-white/80 dark:bg-black/70 backdrop-blur-md border-b border-gray-200 dark:border-white/10 flex items-center justify-between px-4 md:px-8 sticky top-0 z-50">
       <Link href="/" className="font-extrabold text-xl text-gray-900 dark:text-white flex items-center gap-2">
-        <img src="https://reskindev.com/favicon.png" className="h-7" alt="Logo" />
+        <img src="/logo.png" className="h-7" alt="Logo" />
         reskindev
       </Link>
       

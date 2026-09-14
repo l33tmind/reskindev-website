@@ -50,7 +50,7 @@ export default function AdminLayout({ children }) {
       <aside className="w-full md:w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-white/10 flex-shrink-0">
         <div className="h-16 flex items-center px-6 border-b border-gray-200 dark:border-white/10">
           <Link href="/" className="font-extrabold text-lg text-gray-900 dark:text-white flex items-center gap-2">
-            <img src="https://reskindev.com/favicon.png" className="h-6" alt="Logo" />
+            <img src="/logo.png" className="h-6" alt="Logo" />
             Reskindev Admin
           </Link>
         </div>
