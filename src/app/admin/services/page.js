@@ -120,7 +120,7 @@ export default function AdminServices() {
           return (
             <div 
               key={service.id} 
-              draggable={draggableItemId === service.id}
+              draggable={true}
               onDragStart={() => handleDragStart(index)}
               onDragEnter={() => handleDragEnter(index)}
               onDragEnd={handleDragEnd}
