@@ -83,7 +83,7 @@ function InboxContent() {
         [`lastReadTime.${user.uid}`]: serverTimestamp()
       });
     }
-  }, [activeChat?.id, activeChat?.updatedAt, user]);
+  }, [activeChat?.id, activeChat?.updatedAt?.toMillis(), user]);
 
   // 2. Fetch messages for active chat
   useEffect(() => {
