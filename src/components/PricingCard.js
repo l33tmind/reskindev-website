@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Clock, Check, X } from "lucide-react";
+import ContactSellerButton from "./ContactSellerButton";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
