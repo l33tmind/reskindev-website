@@ -68,9 +68,7 @@ export default function FreelancerDashboard() {
             <h1 className="text-3xl font-black text-gray-900 dark:text-white">Seller Dashboard</h1>
             <p className="text-gray-500">Welcome back, {user.displayName}</p>
           </div>
-          <Link href="/freelancer/gigs/edit/new" className="bg-[#00C6A2] hover:bg-[#00b08f] text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2">
-            <Plus size={18} /> Create New Gig
-          </Link>
+
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">

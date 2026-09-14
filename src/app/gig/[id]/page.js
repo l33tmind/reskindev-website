@@ -9,7 +9,7 @@ import ShareButton from "@/components/ShareButton";
 import SaveButton from "@/components/SaveButton";
 import VideoGallery from "@/components/VideoGallery";
 import GigReviews from "@/components/GigReviews";
-import PremiumGallery from "@/components/PremiumGallery";
+
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -144,7 +144,7 @@ export default async function GigDetail({ params }) {
             <VideoGallery youtubeUrls={videoUrls} imageUrl={gig.imageUrl} title={gig.title} />
 
             {/* Premium Gallery */}
-            <PremiumGallery images={gig.galleryImages} unlockPrice={gig.galleryUnlockPrice} />
+            
 
             {/* Service Description */}
             <h2 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Service Description</h2>

@@ -56,14 +56,12 @@ export default function FreelancerGigs() {
             <h1 className="text-3xl font-black text-gray-900 dark:text-white">My Gigs</h1>
             <p className="text-gray-500 text-sm">Manage the services you offer</p>
           </div>
-          <Link href="/freelancer/gigs/edit/new" className="bg-[#00C6A2] hover:bg-[#00b08f] text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2">
-            <Plus size={18} /> Create New Gig
-          </Link>
+
         </div>
 
         {gigs.length === 0 ? (
           <div className="bg-white dark:bg-gray-900 p-10 rounded-2xl border border-gray-200 dark:border-white/10 text-center text-gray-500 dark:text-gray-400">
-            You haven't created any gigs yet. Click "Create New Gig" to start selling!
+            You haven't created any gigs yet.
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
