@@ -86,22 +86,27 @@ export default function OrderPage({ params }) {
 
     setSubmitting(true);
     try {
+      
       const orderData = {
-        gigId: id,
-        gigTitle: gig.title,
+        gigId: gigId,
+        gigTitle: gig.title || "Untitled",
         packageId: activeTabName.toLowerCase(),
-        packageName: pkgData.name,
+        packageName: pkgData.name || "Custom",
         price: finalPrice,
         basePrice: basePrice || 0,
         discountAmount: discountAmount || 0,
         status: "requirements", 
         deliveryDays: pkgData.deliveryDays || 3,
         userId: user.uid,
-        userName: user.displayName,
-        userEmail: user.email,
+        userName: user.displayName || "Client",
+        userEmail: user.email || "",
         authorId: gig.authorId || "admin",
         createdAt: serverTimestamp(),
       };
+      
+      // Sanitize undefined
+      Object.keys(orderData).forEach(key => orderData[key] === undefined && delete orderData[key]);
+
 
       // Wrap in timeout to prevent infinite hang
       const addDocPromise = addDoc(collection(db, "orders"), orderData);

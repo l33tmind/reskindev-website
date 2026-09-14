@@ -151,12 +151,14 @@ export default function FreelancerEditGig({ params }) {
       
       const savePayload = { 
         ...service,
-        // Make sure to sync youtubeUrl into youtubeUrls array for frontend compatibility
         youtubeUrls: service.youtubeUrl ? [service.youtubeUrl] : [],
         videoConsent: service.videoConsent || false,
         videoConsentTimestamp: (service.youtubeUrl && service.videoConsent) ? new Date() : null,
         updatedAt: new Date()
       };
+      
+      // Remove any undefined fields from the state spread
+      Object.keys(savePayload).forEach(key => savePayload[key] === undefined && delete savePayload[key]);
       
       if (isNew && user) {
         savePayload.authorId = user.uid;
