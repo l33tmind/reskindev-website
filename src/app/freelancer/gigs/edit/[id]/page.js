@@ -172,7 +172,7 @@ export default function FreelancerEditGig({ params }) {
         const newId = Date.now().toString();
         await setDoc(doc(db, "services", newId), savePayload);
         toast.success("Gig submitted for approval!");
-        router.push("/freelancer/gigs");
+        router.push("/freelancer");
       } else {
         await setDoc(doc(db, "services", resolvedParams.id), savePayload, { merge: true });
         toast.success("Gig updated successfully!");
@@ -209,7 +209,7 @@ export default function FreelancerEditGig({ params }) {
             <p className="text-gray-500 text-sm">Update your plain text description, YouTube video, and package pricing.</p>
           </div>
           <div className="flex gap-3">
-            <button onClick={() => router.push("/freelancer/gigs")} className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-sm flex items-center transition-colors">
+            <button onClick={() => router.push("/freelancer")} className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl font-bold text-sm flex items-center transition-colors">
               <ArrowLeft size={16} className="mr-2" /> Cancel
             </button>
             <button onClick={handleSave} disabled={saving || (service.youtubeUrl && !service.videoConsent)} className="px-6 py-2 bg-[#00C6A2] hover:bg-[#00b08f] disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-xl font-bold text-sm flex items-center gap-2 transition-colors">
