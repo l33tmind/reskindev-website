@@ -11,7 +11,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
 function InboxContent() {
-  const { user } = useAuth();
+  const { user, dbUser } = useAuth();
   const searchParams = useSearchParams();
   const initialChatId = searchParams.get("chat");
   
@@ -172,7 +172,7 @@ function InboxContent() {
       const updateConvoPromise = updateDoc(doc(db, "conversations", activeChat.id), updateData);
       await Promise.all([addMessagePromise, updateConvoPromise]);
     } catch (err) {
-      console.error("Error sending message:", err);
+      console.error("Error sending message:", err); toast.error("Send Error: " + (err.message || "Unknown error"));
     }
   };
 
@@ -346,12 +346,14 @@ function InboxContent() {
 
                   </div>
                 </div>
-                <button 
-                  onClick={() => setShowOfferModal(true)}
-                  className="hidden md:flex items-center gap-2 bg-gray-900 dark:bg-gray-800 hover:bg-gray-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors"
-                >
-                  <Briefcase size={14} /> Create Offer
-                </button>
+                {(dbUser?.role === 'freelancer' || dbUser?.role === 'admin') && (
+                  <button 
+                    onClick={() => setShowOfferModal(true)}
+                    className="hidden md:flex items-center gap-2 bg-gray-900 dark:bg-gray-800 hover:bg-gray-800 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors"
+                  >
+                    <Briefcase size={14} /> Create Offer
+                  </button>
+                )}
               </div>
 
               {/* Messages Area */}
@@ -429,12 +431,14 @@ function InboxContent() {
 
               {/* Input Area */}
               <div className="p-3 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-white/10">
-                <button 
-                  onClick={() => setShowOfferModal(true)}
-                  className="md:hidden w-full mb-3 flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-700 dark:text-gray-300 text-xs font-bold px-4 py-2 rounded-lg transition-colors"
-                >
-                  <Briefcase size={14} /> Send Custom Offer
-                </button>
+                {(dbUser?.role === 'freelancer' || dbUser?.role === 'admin') && (
+                  <button 
+                    onClick={() => setShowOfferModal(true)}
+                    className="md:hidden w-full mb-3 flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-700 dark:text-gray-300 text-xs font-bold px-4 py-2 rounded-lg transition-colors"
+                  >
+                    <Briefcase size={14} /> Send Custom Offer
+                  </button>
+                )}
                 <form onSubmit={handleSendMessage} className="flex gap-2 items-end">
                   <div className="flex-1 bg-gray-100 dark:bg-gray-800 border border-transparent focus-within:border-[#00C6A2] rounded-2xl overflow-hidden flex transition-colors">
                     <textarea 
