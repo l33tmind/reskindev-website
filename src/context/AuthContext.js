@@ -31,10 +31,16 @@ export function AuthProvider({ children }) {
         
         // Listen to realtime updates on the user document
         unsubscribeSnapshot = onSnapshot(userRef, async (userSnap) => {
+          
           if (userSnap.exists()) {
             setDbUser(userSnap.data());
             setLoading(false);
-          } else {
+            // Set online
+            if (!userSnap.data().isOnline) {
+                setDoc(userRef, { isOnline: true, lastLogin: serverTimestamp() }, { merge: true });
+            }
+          }
+ else {
             // New user logic (fallback if not created by login/signup functions directly)
               const baseUsername = currentUser.email ? currentUser.email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '') : 'user';
               const newUserData = {
@@ -65,7 +71,21 @@ export function AuthProvider({ children }) {
       };
     }, []);
   
-    const loginWithGoogle = async (role = "buyer") => {
+    
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (user) {
+        // Beacon to set offline
+        navigator.sendBeacon(`https://firestore.googleapis.com/v1/projects/reskindev-769d3/databases/(default)/documents/users/${user.uid}?updateMask.fieldPaths=isOnline`, JSON.stringify({
+          fields: { isOnline: { booleanValue: false } }
+        }));
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [user]);
+
+  const loginWithGoogle = async (role = "buyer") => {
       const provider = new GoogleAuthProvider();
       try {
         const result = await signInWithPopup(auth, provider);

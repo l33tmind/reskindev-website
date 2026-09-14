@@ -20,6 +20,7 @@ function InboxContent() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
+  const [otherUserStatus, setOtherUserStatus] = useState("Offline");
   const [showOfferModal, setShowOfferModal] = useState(false);
   const [offerDetails, setOfferDetails] = useState({ price: "", days: "", description: "" });
   
@@ -331,7 +332,12 @@ function InboxContent() {
                   <img src={otherUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(otherUser.name)}`} alt={otherUser.name} className="w-10 h-10 rounded-full border border-gray-200" />
                   <div>
                     <h3 className="font-bold text-gray-900 dark:text-white leading-tight">{otherUser.name}</h3>
-                    <p className="text-[11px] text-green-500 font-semibold tracking-wide">Online</p>
+                    
+                    <div className="flex items-center gap-1">
+                      <div className={`w-2 h-2 rounded-full ${otherUserStatus === "Online" ? "bg-green-500" : "bg-gray-400"}`}></div>
+                      <p className={`text-[11px] font-semibold tracking-wide ${otherUserStatus === "Online" ? "text-green-500" : "text-gray-400"}`}>{otherUserStatus}</p>
+                    </div>
+
                   </div>
                 </div>
                 <button 
