@@ -150,18 +150,17 @@ function InboxContent() {
 
     const currentUnread = activeChat.unreadCount?.[otherUserId] || 0;
 
-    try {
       const addMessagePromise = addDoc(collection(db, "conversations", activeChat.id, "messages"), {
         text: msgText,
         senderId: user.uid,
         senderName: user.displayName || "User",
-        createdAt: serverTimestamp(),
+        createdAt: new Date(),
         type: "text"
       });
 
       const updateData = {
         lastMessage: msgText,
-        updatedAt: serverTimestamp(),
+        updatedAt: new Date(),
         [`typing.${user.uid}`]: false
       };
       
@@ -170,10 +169,10 @@ function InboxContent() {
       }
       
       const updateConvoPromise = updateDoc(doc(db, "conversations", activeChat.id), updateData);
-      await Promise.all([addMessagePromise, updateConvoPromise]);
-    } catch (err) {
-      console.error("Error sending message:", err); toast.error("Send Error: " + (err.message || "Unknown error"));
-    }
+      Promise.all([addMessagePromise, updateConvoPromise]).catch(err => {
+        console.error("Error sending message:", err);
+        toast.error("Send Error: " + (err.message || "Unknown error"));
+      });
   };
 
   const handleSendOffer = async (e) => {
@@ -187,7 +186,7 @@ function InboxContent() {
       text: "Sent a custom offer",
       senderId: user.uid,
       senderName: user.displayName || "User",
-      createdAt: serverTimestamp(),
+      createdAt: new Date(),
       type: "offer",
       offerPrice: offerDetails.price,
       offerDays: offerDetails.days,
@@ -197,7 +196,7 @@ function InboxContent() {
 
     await updateDoc(doc(db, "conversations", activeChat.id), {
       lastMessage: `Custom Offer: $${offerDetails.price}`,
-      updatedAt: serverTimestamp(),
+      updatedAt: new Date(),
       [`unreadCount.${otherUserId}`]: currentUnread + 1
     });
 
