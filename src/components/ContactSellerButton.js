@@ -13,6 +13,14 @@ export default function ContactSellerButton({ authorId, authorName, gigId, gigTi
   const { user } = useAuth();
   const router = useRouter();
 
+  const withTimeout = (promise, ms, name) => {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject(new Error(name + " timed out after " + ms + "ms")), ms))
+    ]);
+  };
+
+
   const handleContact = async () => {
     if (!user) {
       toast.error("Please login to message the seller.");
@@ -32,7 +40,7 @@ export default function ContactSellerButton({ authorId, authorName, gigId, gigTi
         where("participants", "array-contains", user.uid)
       );
       
-      const snap = await getDocs(q);
+      const snap = await withTimeout(getDocs(q), 5000, "getDocs");
       let existingChatId = null;
       
       snap.docs.forEach(doc => {
@@ -45,7 +53,7 @@ export default function ContactSellerButton({ authorId, authorName, gigId, gigTi
       let chatId = existingChatId;
 
       if (!existingChatId) {
-        const newChat = await addDoc(collection(db, "conversations"), {
+        const newChat = await withTimeout(addDoc(collection(db, "conversations"), {
           participants: [user.uid, authorId],
           participantDetails: {
             [user.uid]: { name: user.displayName || "User" },
@@ -54,7 +62,7 @@ export default function ContactSellerButton({ authorId, authorName, gigId, gigTi
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
           lastMessage: ""
-        });
+        }), 5000, "addDoc conversation");
         chatId = newChat.id;
       }
 
@@ -62,19 +70,19 @@ export default function ContactSellerButton({ authorId, authorName, gigId, gigTi
       if (gigId && gigTitle) {
         const msgText = `Hi! I'm interested in your service:\n${gigTitle}\nhttps://reskindev.com/gig/${gigId}`;
         
-        await addDoc(collection(db, "conversations", chatId, "messages"), {
+        await withTimeout(addDoc(collection(db, "conversations", chatId, "messages"), {
           text: msgText,
           senderId: user.uid,
           senderName: user.displayName || "User",
           createdAt: serverTimestamp(),
           type: "text"
-        });
+        }), 5000, "addDoc messages");
 
-        await updateDoc(doc(db, "conversations", chatId), {
+        await withTimeout(updateDoc(doc(db, "conversations", chatId), {
           lastMessage: `Interested in: ${gigTitle}`,
           updatedAt: serverTimestamp(),
           [`unreadCount.${authorId}`]: increment(1)
-        });
+        }), 5000, "updateDoc conversation");
       }
 
       window.location.href = `/inbox?chat=${chatId}`;
