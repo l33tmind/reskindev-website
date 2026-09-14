@@ -77,10 +77,10 @@ export default function ContactSellerButton({ authorId, authorName, gigId, gigTi
         });
       }
 
-      router.push(`/inbox?chat=${chatId}`);
+      window.location.href = `/inbox?chat=${chatId}`;
     } catch (error) {
       console.error(error);
-      toast.error("Failed to start conversation.");
+      toast.error("Error: " + (error.message || "Unknown failed"));
     } finally {
       setLoading(false);
     }
