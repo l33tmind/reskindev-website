@@ -87,7 +87,7 @@ export default function ServiceGrid({ gigs }) {
 
           return (
             <StaggerItem key={gig.id}>
-              <Link href={`/gig/${gig.id}/${(gig.title || 'service').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>
+              <Link href={`/gig/${gig.id}/${(gig.title || 'service').toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} target="_blank">
                 <div className="bg-white dark:bg-gray-900/60 backdrop-blur-sm rounded-2xl border border-gray-200 dark:border-white/5 overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 hover:shadow-[0_10px_30px_rgba(0,198,162,0.15)] transition-all duration-300 cursor-pointer h-full flex flex-col group">
                   <div className="w-full aspect-video relative overflow-hidden bg-gray-100 dark:bg-gray-800">
                     {coverImage ? (
@@ -114,7 +114,7 @@ export default function ServiceGrid({ gigs }) {
                         {gig.authorName || "MD Robius Sany"}
                       </span>
                     </div>
-                    <h3 className="font-bold text-gray-900 dark:text-white mb-2 text-[15px] leading-snug line-clamp-2 flex-1 group-hover:text-[#00C6A2] transition-colors">
+                    <h3 className="font-bold text-gray-900 dark:text-white mb-2 text-[15px] leading-snug line-clamp-2 flex-1 group-hover:text-[#00C6A2] transition-colors group-hover:underline decoration-[#00C6A2] underline-offset-4">
                       {gig.title}
                     </h3>
                     
