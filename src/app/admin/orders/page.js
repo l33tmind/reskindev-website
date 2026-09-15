@@ -34,14 +34,38 @@ export default function AdminOrders() {
       await updateDoc(doc(db, "orders", orderId), { status: newStatus });
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
       
-      // Notify the buyer
-      if (order && order.userId) {
-        await addDoc(collection(db, "notifications"), {
-          userId: order.userId,
-          message: `Your order for "${order.gigTitle}" is now marked as: ${newStatus.toUpperCase()}`,
-          read: false,
-          createdAt: serverTimestamp()
-        });
+      // Notify buyer and freelancer
+      if (order) {
+        let buyerMessage = `Your order for "${order.gigTitle}" is now marked as: ${newStatus.replace(/_/g, ' ').toUpperCase()}`;
+        let sellerMessage = `Order status for "${order.gigTitle}" updated to: ${newStatus.replace(/_/g, ' ').toUpperCase()}`;
+
+        if (newStatus === "requirements") {
+          buyerMessage = `✅ Payment Secured! Reskindev has successfully held your escrow payment for "${order.gigTitle}". Please submit your requirements if you haven't already.`;
+          sellerMessage = `🎉 Escrow Payment Received! Reskindev has secured the funds for "${order.gigTitle}". You can now safely start working on this order!`;
+        } else if (newStatus === "completed") {
+          sellerMessage = `🎉 Order Completed! Earnings for "${order.gigTitle}" have been added to your balance.`;
+        }
+
+        // Send to Buyer
+        if (order.userId) {
+          await addDoc(collection(db, "notifications"), {
+            userId: order.userId,
+            message: buyerMessage,
+            read: false,
+            createdAt: serverTimestamp()
+          });
+        }
+        
+        // Send to Freelancer
+        const sellerId = order.freelancerId || order.authorId;
+        if (sellerId && sellerId !== order.userId) {
+          await addDoc(collection(db, "notifications"), {
+            userId: sellerId,
+            message: sellerMessage,
+            read: false,
+            createdAt: serverTimestamp()
+          });
+        }
       }
     } catch (e) {
       alert("Failed to update status.");
