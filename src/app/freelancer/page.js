@@ -14,7 +14,7 @@ import ContactUserButton from "@/components/ContactUserButton";
 export default function FreelancerDashboard() {
   const { user, dbUser, loading } = useAuth();
   const router = useRouter();
-  const [stats, setStats] = useState({ gigs: 0, orders: 0, earnings: 0 });
+  const [stats, setStats] = useState({ gigs: 0, orders: 0, earnings: 0, pendingClearance: 0, availableForWithdrawal: 0 });
   const [activeTab, setActiveTab] = useState('gigs');
 
 
@@ -40,20 +40,38 @@ export default function FreelancerDashboard() {
         const ordersQ = query(collection(db, "orders"), where("authorId", "==", user.uid));
         const ordersSnap = await getDocs(ordersQ);
         let completed = 0;
-        let earnings = 0;
+        let totalEarnings = 0;
+        let pending = 0;
+        let available = 0;
         
+        const now = Date.now();
+        const FIFTEEN_DAYS_MS = 15 * 24 * 60 * 60 * 1000;
+
         ordersSnap.forEach(d => {
           const data = d.data();
           if (data.status === "completed") {
             completed++;
             const price = parseFloat(data.price) || 0;
-            // Calculate what freelancer keeps: e.g. 100 - (100 * 10 / 100) = 90
             const freelancerShare = price - (price * (platformFeePercentage / 100));
-            earnings += freelancerShare;
+            totalEarnings += freelancerShare;
+            
+            // Check clearance (15 days)
+            const completedTime = data.completedAt ? data.completedAt.toMillis() : 0;
+            if (completedTime > 0 && (now - completedTime) < FIFTEEN_DAYS_MS) {
+                pending += freelancerShare;
+            } else {
+                available += freelancerShare;
+            }
           }
         });
 
-        setStats({ gigs: gigsCount, orders: completed, earnings: earnings.toFixed(2) });
+        setStats({ 
+            gigs: gigsCount, 
+            orders: completed, 
+            earnings: totalEarnings.toFixed(2),
+            pendingClearance: pending.toFixed(2),
+            availableForWithdrawal: available.toFixed(2)
+        });
       } catch (err) {
         console.error(err);
       }
@@ -110,6 +128,12 @@ export default function FreelancerDashboard() {
             className={`pb-4 px-2 font-bold text-sm transition-colors border-b-2 ${activeTab === 'orders' ? 'border-blue-500 text-blue-500' : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
           >
             Manage Orders
+          </button>
+          <button 
+            onClick={() => setActiveTab('earnings')} 
+            className={`pb-4 px-2 font-bold text-sm transition-colors border-b-2 ${activeTab === 'earnings' ? 'border-green-500 text-green-500' : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+          >
+            Earnings
           </button>
         </div>
 

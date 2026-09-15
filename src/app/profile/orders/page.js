@@ -159,12 +159,14 @@ export default function MyOrders() {
         createdAt: serverTimestamp()
       });
 
-      // Mark order as reviewed
+      // Mark order as completed and reviewed
       await updateDoc(doc(db, "orders", reviewOrder.id), {
-        hasReview: true
+        status: "completed",
+        hasReview: true,
+        completedAt: serverTimestamp()
       });
 
-      setOrders(orders.map(o => o.id === reviewOrder.id ? { ...o, hasReview: true } : o));
+      setOrders(orders.map(o => o.id === reviewOrder.id ? { ...o, status: "completed", hasReview: true } : o));
       setReviewOrder(null);
       setComment("");
       setRating(5);
