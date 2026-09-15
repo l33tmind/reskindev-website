@@ -55,7 +55,7 @@ export default function FreelancerDashboard() {
             totalEarnings += freelancerShare;
             
             // Check clearance (15 days)
-            const completedTime = data.completedAt ? data.completedAt.toMillis() : 0;
+            const completedTime = data.completedAt ? (typeof data.completedAt.toMillis === 'function' ? data.completedAt.toMillis() : new Date(data.completedAt).getTime()) : 0;
             if (completedTime > 0 && (now - completedTime) < FIFTEEN_DAYS_MS) {
                 pending += freelancerShare;
             } else {
@@ -298,7 +298,7 @@ function FreelancerOrders() {
         
         const q = query(collection(db, "orders"), where("authorId", "==", user.uid));
         const snap = await getDocs(q);
-        setOrders(snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)));
+        setOrders(snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => { const aTime = a.createdAt ? (typeof a.createdAt.toMillis === 'function' ? a.createdAt.toMillis() : new Date(a.createdAt).getTime()) : 0; const bTime = b.createdAt ? (typeof b.createdAt.toMillis === 'function' ? b.createdAt.toMillis() : new Date(b.createdAt).getTime()) : 0; return bTime - aTime; }));
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
