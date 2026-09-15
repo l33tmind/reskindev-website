@@ -151,6 +151,7 @@ export default function FreelancerEditGig({ params }) {
       
       const savePayload = { 
         ...service,
+        status: "pending", // Always set to pending on create/update for admin approval
         youtubeUrls: service.youtubeUrl ? [service.youtubeUrl] : [],
         videoConsent: service.videoConsent || false,
         videoConsentTimestamp: (service.youtubeUrl && service.videoConsent) ? new Date() : null,

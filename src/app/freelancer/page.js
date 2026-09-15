@@ -257,6 +257,19 @@ function FreelancerOrders() {
   const [platformFee, setPlatformFee] = useState(10);
   const [activeTab, setActiveTab] = useState('all');
 
+  const getCountdown = (startDate, daysStr) => {
+    if (!startDate) return 'No Date';
+    const start = startDate.toMillis ? startDate.toMillis() : new Date(startDate).getTime();
+    const days = parseInt(daysStr) || 3;
+    const end = start + (days * 24 * 60 * 60 * 1000);
+    const now = Date.now();
+    const diff = end - now;
+    if (diff <= 0) return 'Late';
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    return `${d}d ${h}h left`;
+  };
+
   // Delivery Modal State
   const [deliveryModal, setDeliveryModal] = useState(null);
   const [deliveryMessage, setDeliveryMessage] = useState("");
