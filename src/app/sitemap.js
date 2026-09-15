@@ -1,6 +1,9 @@
 import { collection, getDocs, query, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 export default async function sitemap() {
   const baseUrl = "https://reskindev.com";
 
