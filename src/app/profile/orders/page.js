@@ -57,6 +57,48 @@ export default function MyOrders() {
     return idx === -1 ? 0 : idx;
   };
 
+
+  const handleSubmitReq = async (e) => {
+    e.preventDefault();
+    if (!reqText.trim()) return;
+    setSubmittingReq(true);
+    try {
+      await updateDoc(doc(db, "orders", reqOrder.id), { 
+        status: "processing", 
+        requirementsText: reqText,
+        requirementsProvided: true,
+        updatedAt: serverTimestamp()
+      });
+      setOrders(orders.map(o => o.id === reqOrder.id ? { ...o, status: "processing" } : o));
+      toast.success("Requirements submitted successfully!");
+      setReqOrder(null);
+      setReqText("");
+    } catch (error) {
+      toast.error("Failed to submit requirements.");
+      console.error(error);
+    }
+    setSubmittingReq(false);
+  };
+
+  const handleRequestRev = async (e) => {
+    e.preventDefault();
+    if (!revText.trim()) return;
+    try {
+      await updateDoc(doc(db, "orders", revOrder.id), { 
+        status: "revision",
+        revisionNote: revText,
+        updatedAt: serverTimestamp()
+      });
+      setOrders(orders.map(o => o.id === revOrder.id ? { ...o, status: "revision" } : o));
+      toast.success("Revision requested successfully!");
+      setRevOrder(null);
+      setRevText("");
+    } catch (error) {
+      toast.error("Failed to request revision.");
+      console.error(error);
+    }
+  };
+
   const submitReview = async (e) => {
     e.preventDefault();
     if (!reviewOrder || !user) return;
@@ -124,8 +166,8 @@ export default function MyOrders() {
                       <div className="font-black text-2xl text-[#00C6A2]">${order.price}.00</div>
                     </div>
                     <ContactUserButton 
-                      targetUserId={order.freelancerId} 
-                      targetUserName={order.freelancerName} 
+                      targetUserId={order.freelancerId || order.authorId} 
+                      targetUserName={order.freelancerName || order.authorName || "Seller"} 
                       label="Message" 
                       className="bg-[#00C6A2] hover:bg-[#00b08f] text-white p-3 rounded-xl border border-transparent transition-colors font-bold text-sm"
                     />

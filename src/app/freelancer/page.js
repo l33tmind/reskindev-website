@@ -37,7 +37,7 @@ export default function FreelancerDashboard() {
         const gigsSnap = await getDocs(gigsQ);
         const gigsCount = gigsSnap.size;
 
-        const ordersQ = query(collection(db, "orders"), where("freelancerId", "==", user.uid));
+        const ordersQ = query(collection(db, "orders"), where("authorId", "==", user.uid));
         const ordersSnap = await getDocs(ordersQ);
         let completed = 0;
         let earnings = 0;
@@ -258,7 +258,7 @@ function FreelancerOrders() {
           setPlatformFee(Number(settingsSnap.data().platformFee) || 10);
         }
         
-        const q = query(collection(db, "orders"), where("freelancerId", "==", user.uid));
+        const q = query(collection(db, "orders"), where("authorId", "==", user.uid));
         const snap = await getDocs(q);
         setOrders(snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)));
       } catch (error) {

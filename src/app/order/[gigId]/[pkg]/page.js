@@ -101,6 +101,8 @@ export default function OrderPage({ params }) {
         userName: user.displayName || "Client",
         userEmail: user.email || "",
         authorId: gig.authorId || "admin",
+        freelancerId: gig.authorId || "admin",
+        freelancerName: gig.authorName || "Seller",
         createdAt: new Date(),
       };
       
