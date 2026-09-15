@@ -122,7 +122,15 @@ export default async function Home() {
         <p className="text-gray-500 dark:text-gray-400 mb-8 text-lg">Find the best services for your next project</p>
         
         <Suspense fallback={<div className="py-20 text-center">Loading services...</div>}>
-          <ServiceGrid gigs={gigs} />
+          <ServiceGrid gigs={gigs} hideSearch={true} limit={6} />
+          
+          <div className="flex justify-center mt-12">
+            <Link href="/search">
+              <button className="bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:scale-105 transition-transform font-bold px-10 py-4 rounded-full shadow-xl shadow-gray-900/20 dark:shadow-white/10 flex items-center gap-2">
+                Show More Gigs <span className="text-xl leading-none">&rarr;</span>
+              </button>
+            </Link>
+          </div>
         </Suspense>
       </div>
 

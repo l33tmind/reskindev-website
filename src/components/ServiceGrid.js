@@ -6,7 +6,7 @@ import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { StaggerContainer, StaggerItem } from "./ClientMotion";
 
-export default function ServiceGrid({ gigs }) {
+export default function ServiceGrid({ gigs, hideSearch, limit }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get("q") || "";
@@ -35,6 +35,8 @@ export default function ServiceGrid({ gigs }) {
     return matchSearch && matchCategory;
   });
 
+  const displayedGigs = limit ? filteredGigs.slice(0, limit) : filteredGigs;
+
   const extractYouTubeId = (url) => {
     if (!url) return null;
     const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
@@ -44,6 +46,7 @@ export default function ServiceGrid({ gigs }) {
   return (
     <>
       {/* Search and Filters */}
+      {!hideSearch && (
       <div className="flex flex-col md:flex-row gap-4 mb-10 items-center justify-between">
         <div className="relative w-full md:max-w-md">
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
@@ -73,9 +76,10 @@ export default function ServiceGrid({ gigs }) {
         </div>
       </div>
       
+      )}
       {/* Services Grid */}
       <StaggerContainer key={selectedCategory + search} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredGigs.map(gig => {
+        {displayedGigs.map(gig => {
           const ytId = extractYouTubeId(gig.youtubeUrl);
           const coverImage = ytId 
             ? `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg` 
@@ -131,7 +135,7 @@ export default function ServiceGrid({ gigs }) {
           );
         })}
         
-        {filteredGigs.length === 0 && (
+        {displayedGigs.length === 0 && (
           <div className="col-span-full py-20 text-center text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900 border border-gray-200 rounded-2xl">
             No services found matching your criteria.
           </div>
