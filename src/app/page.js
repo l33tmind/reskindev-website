@@ -122,7 +122,7 @@ export default async function Home() {
         <p className="text-gray-500 dark:text-gray-400 mb-8 text-lg">Find the best services for your next project</p>
         
         <Suspense fallback={<div className="py-20 text-center">Loading services...</div>}>
-          <ServiceGrid gigs={gigs} hideSearch={true} limit={6} />
+          <ServiceGrid gigs={gigs} hideSearch={true} limit={8} />
           
           <div className="flex justify-center mt-12">
             <Link href="/search">
