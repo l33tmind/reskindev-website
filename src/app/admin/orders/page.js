@@ -100,6 +100,7 @@ export default function AdminOrders() {
           className="border border-gray-300 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-[#00C6A2] font-bold text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
         >
           <option value="">All Orders</option>
+          <option value="pending_payment">⏳ Pending Payment</option>
           <option value="disputed">⚠️ Disputes</option>
         </select>
         </div>
@@ -155,6 +156,7 @@ export default function AdminOrders() {
                             'bg-amber-100 text-amber-700 border border-amber-200'
                           }`}
                         >
+                          <option value="pending_payment">Pending Payment</option>
                           <option value="pending">Pending</option>
                           <option value="requirements">Requirements</option>
                           <option value="processing">Processing</option>

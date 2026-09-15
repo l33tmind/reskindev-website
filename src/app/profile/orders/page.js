@@ -47,10 +47,11 @@ export default function MyOrders() {
     fetchOrders();
   }, [user]);
 
-  const STAGES = ["requirements", "processing", "delivered", "completed"];
+  const STAGES = ["payment", "requirements", "processing", "delivered", "completed"];
 
   const getStageIndex = (status) => {
     let s = (status || "requirements").toLowerCase();
+    if (s === "pending_payment") s = "payment";
     if (s === "pending") s = "requirements";
     if (s === "revision") s = "processing";
     const idx = STAGES.indexOf(s);
@@ -210,6 +211,12 @@ export default function MyOrders() {
                 {/* Actions */}
                 <div className="pt-4 mt-4 border-t border-gray-100 dark:border-white/5 flex flex-wrap gap-2 justify-end">
                   
+                  
+                  {order.status === 'pending_payment' && (
+                    <span className="bg-amber-100 text-amber-800 font-bold py-2 px-4 rounded-xl text-xs flex items-center shadow-sm">
+                      Waiting for Payment
+                    </span>
+                  )}
                   {['requirements', 'pending'].includes(order.status) && (
                     <button onClick={() => setReqOrder(order)} className="bg-amber-400 hover:bg-amber-500 text-amber-900 font-bold py-2 px-5 rounded-xl text-xs transition-colors shadow-sm">
                       Submit Requirements

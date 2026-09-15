@@ -371,7 +371,7 @@ function FreelancerOrders() {
           <tbody className="divide-y divide-gray-100 dark:divide-white/5">
             {orders.filter(o => {
               if (activeTab === 'all') return true;
-              if (activeTab === 'active') return ['pending', 'requirements', 'processing', 'revision', 'cancel_requested_by_buyer', 'cancel_requested_by_freelancer', 'disputed'].includes(o.status);
+              if (activeTab === 'active') return ['pending_payment', 'pending', 'requirements', 'processing', 'revision', 'cancel_requested_by_buyer', 'cancel_requested_by_freelancer', 'disputed'].includes(o.status);
               if (activeTab === 'delivered') return o.status === 'delivered';
               if (activeTab === 'completed') return o.status === 'completed';
               if (activeTab === 'cancelled') return o.status === 'cancelled';
@@ -422,6 +422,7 @@ function FreelancerOrders() {
                     ['completed'].includes(order.status) ? 'bg-green-50 text-green-600 border-green-200' :
                     ['delivered'].includes(order.status) ? 'bg-purple-50 text-purple-600 border-purple-200' :
                     ['cancelled', 'disputed'].includes(order.status) ? 'bg-red-50 text-red-600 border-red-200' :
+                    ['pending_payment'].includes(order.status) ? 'bg-orange-100 text-orange-800 border-orange-300' :
                     ['requirements'].includes(order.status) ? 'bg-amber-50 text-amber-600 border-amber-200' :
                     'bg-blue-50 text-blue-600 border-blue-200'
                   }`}>
@@ -470,7 +471,7 @@ function FreelancerOrders() {
             ))}
             {orders.filter(o => {
               if (activeTab === 'all') return true;
-              if (activeTab === 'active') return ['pending', 'requirements', 'processing', 'revision', 'cancel_requested_by_buyer', 'cancel_requested_by_freelancer', 'disputed'].includes(o.status);
+              if (activeTab === 'active') return ['pending_payment', 'pending', 'requirements', 'processing', 'revision', 'cancel_requested_by_buyer', 'cancel_requested_by_freelancer', 'disputed'].includes(o.status);
               if (activeTab === 'delivered') return o.status === 'delivered';
               if (activeTab === 'completed') return o.status === 'completed';
               if (activeTab === 'cancelled') return o.status === 'cancelled';

@@ -95,7 +95,7 @@ export default function OrderPage({ params }) {
         price: finalPrice,
         basePrice: basePrice || 0,
         discountAmount: discountAmount || 0,
-        status: "requirements", 
+        status: "pending_payment", 
         deliveryDays: pkgData.deliveryDays || 3,
         userId: user.uid,
         userName: user.displayName || "Client",
