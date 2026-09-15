@@ -1,18 +1,52 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { signOut, deleteUser } from "firebase/auth";
+import { auth, db } from "@/lib/firebase";
+import toast from "react-hot-toast";
+import { doc, deleteDoc } from "firebase/firestore";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import Navbar from "@/components/Navbar";
-import { User, ShoppingBag, Heart, Settings } from "lucide-react";
+import { User, ShoppingBag, Heart, Settings, LogOut, Trash2, AlertTriangle } from "lucide-react";
 
 export default function ProfileLayout({ children }) {
   const { user, dbUser, loading } = useAuth();
   const pathname = usePathname();
 
+  
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [switchingRole, setSwitchingRole] = useState(false);
+  
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      // Optional: Delete user document from firestore
+      try {
+        await deleteDoc(doc(db, "users", user.uid));
+      } catch (e) {
+        console.error("Firestore user doc delete failed", e);
+      }
+      
+      await deleteUser(user);
+      toast.success("Account deleted successfully.");
+      // Auto redirects via AuthContext
+    } catch (error) {
+      console.error(error);
+      if (error.code === 'auth/requires-recent-login') {
+        toast.error("Security requirement: Please log out and log back in to delete your account.");
+      } else {
+        toast.error("Failed to delete account. " + error.message);
+      }
+    }
+    setDeleting(false);
+    setShowDeleteModal(false);
+  };
+
 
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -84,7 +118,27 @@ export default function ProfileLayout({ children }) {
                   </Link>
                 );
               })}
+
+              {/* Actions */}
+              <div className="h-px bg-gray-100 dark:bg-white/10 my-2 mx-4"></div>
+              
+              <button 
+                onClick={() => setShowDeleteModal(true)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors w-full text-left"
+              >
+                <Trash2 size={18} />
+                Delete Account
+              </button>
+              
+              <button 
+                onClick={() => signOut(auth)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors w-full text-left"
+              >
+                <LogOut size={18} />
+                Log Out
+              </button>
             </nav>
+
           </div>
         </aside>
 
@@ -93,6 +147,42 @@ export default function ProfileLayout({ children }) {
           {children}
         </main>
       </div>
+
+
+      {/* Delete Account Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-gray-900 w-full max-w-sm rounded-3xl shadow-2xl p-6 border border-gray-200 dark:border-white/10 animate-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
+              <AlertTriangle size={32} />
+            </div>
+            
+            <h3 className="text-xl font-black text-center mb-2 text-gray-900 dark:text-white">
+              Delete Account?
+            </h3>
+            <p className="text-sm text-gray-500 text-center mb-6">
+              This action cannot be undone. All your data, active gigs, and order history will be permanently lost.
+            </p>
+            
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleting}
+                className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleDeleteAccount}
+                disabled={deleting}
+                className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all disabled:opacity-80 shadow-md"
+              >
+                {deleting ? 'Deleting...' : 'Yes, Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Role Switch Modal */}
       {showRoleModal && (
