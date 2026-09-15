@@ -13,7 +13,8 @@ import {
   Tag,
   Bell,
   ArrowLeft,
-  MessageSquare
+  MessageSquare,
+  DollarSign
 } from "lucide-react";
 
 export default function AdminLayout({ children }) {
@@ -38,9 +39,11 @@ export default function AdminLayout({ children }) {
     { name: "All Orders", icon: ListOrdered, path: "/admin/orders" },
     { name: "Users", icon: Users, path: "/admin/users" },
     { name: "Manage Services", icon: Briefcase, path: "/admin/services" },
-    { name: "Messages", icon: MessageSquare, path: "/admin/messages" },
+    { name: "Messages", icon: MessageSquare,
+  DollarSign, path: "/admin/messages" },
     { name: "Manage Pages", icon: FileText, path: "/admin/pages" },
     { name: "Coupons", icon: Tag, path: "/admin/coupons" },
+    { name: "Withdrawals", icon: DollarSign, path: "/admin/withdrawals" },
     { name: "Settings", icon: Settings, path: "/admin/settings" },
   ];
 

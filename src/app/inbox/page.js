@@ -433,7 +433,7 @@ function InboxContent() {
                 {(dbUser?.role === 'freelancer' || dbUser?.role === 'admin') && (
                   <button 
                     onClick={() => setShowOfferModal(true)}
-                    className="md:hidden w-full mb-3 flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-700 dark:text-gray-300 text-xs font-bold px-4 py-2 rounded-lg transition-colors"
+                    className="w-full mb-3 flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-700 dark:text-gray-300 text-xs font-bold px-4 py-2 rounded-lg transition-colors"
                   >
                     <Briefcase size={14} /> Send Custom Offer
                   </button>

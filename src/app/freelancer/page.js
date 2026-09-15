@@ -14,7 +14,11 @@ import ContactUserButton from "@/components/ContactUserButton";
 export default function FreelancerDashboard() {
   const { user, dbUser, loading } = useAuth();
   const router = useRouter();
-  const [stats, setStats] = useState({ gigs: 0, orders: 0, earnings: 0, pendingClearance: 0, availableForWithdrawal: 0 });
+  const [stats, setStats] = useState({ gigs: 0, orders: 0, earnings: 0, pendingClearance: 0, availableForWithdrawal: 0, withdrawn: 0 });
+  const [withdrawModal, setWithdrawModal] = useState(false);
+  const [payoneerEmail, setPayoneerEmail] = useState("");
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [withdrawing, setWithdrawing] = useState(false);
   const [activeTab, setActiveTab] = useState('gigs');
 
 
@@ -64,12 +68,21 @@ export default function FreelancerDashboard() {
           }
         });
 
+        // Fetch Withdrawals
+        let withdrawnSum = 0;
+        const wQ = query(collection(db, "withdrawals"), where("freelancerId", "==", user.uid));
+        const wSnap = await getDocs(wQ);
+        wSnap.forEach(d => {
+            withdrawnSum += (parseFloat(d.data().amount) || 0);
+        });
+
         setStats({ 
             gigs: gigsCount, 
             orders: completed, 
             earnings: totalEarnings.toFixed(2),
             pendingClearance: pending.toFixed(2),
-            availableForWithdrawal: available.toFixed(2)
+            availableForWithdrawal: (available - withdrawnSum).toFixed(2),
+            withdrawn: withdrawnSum.toFixed(2)
         });
       } catch (err) {
         console.error(err);
@@ -77,6 +90,44 @@ export default function FreelancerDashboard() {
     }
     fetchStats();
   }, [user]);
+
+  const handleWithdraw = async (e) => {
+    e.preventDefault();
+    const amount = parseFloat(withdrawAmount);
+    if (!payoneerEmail || !amount || amount < 50) {
+      toast.error("Minimum withdrawal is $50. Please enter valid details.");
+      return;
+    }
+    if (amount > parseFloat(stats.availableForWithdrawal)) {
+      toast.error("Insufficient available balance.");
+      return;
+    }
+    
+    setWithdrawing(true);
+    try {
+      await addDoc(collection(db, "withdrawals"), {
+        freelancerId: user.uid,
+        freelancerName: user.displayName,
+        email: user.email,
+        payoneerEmail: payoneerEmail,
+        amount: amount,
+        status: "pending",
+        createdAt: serverTimestamp()
+      });
+      toast.success("Withdrawal request submitted successfully!");
+      setWithdrawModal(false);
+      setWithdrawAmount("");
+      // Update local state temporarily
+      setStats(prev => ({
+        ...prev,
+        availableForWithdrawal: (parseFloat(prev.availableForWithdrawal) - amount).toFixed(2),
+        withdrawn: (parseFloat(prev.withdrawn || 0) + amount).toFixed(2)
+      }));
+    } catch (err) {
+      toast.error("Failed to submit request.");
+    }
+    setWithdrawing(false);
+  };
 
   if (loading || !user) return <div className="min-h-screen p-20 text-center">Loading Dashboard...</div>;
 
@@ -138,6 +189,58 @@ export default function FreelancerDashboard() {
 
         {/* Tab Content */}
         {activeTab === 'gigs' ? <FreelancerGigs /> : <FreelancerOrders />}
+
+      {/* Withdraw Modal */}
+      {withdrawModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 md:p-8 w-full max-w-md shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <button onClick={() => setWithdrawModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 dark:hover:text-white bg-gray-100 dark:bg-gray-800 rounded-full p-2">
+              <X size={20} />
+            </button>
+            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
+              <DollarSign size={32} />
+            </div>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Withdraw to Payoneer</h2>
+            <p className="text-gray-500 text-sm mb-6">Available Balance: <strong className="text-[#00C6A2]">${stats.availableForWithdrawal}</strong> (Min: $50)</p>
+            
+            <form onSubmit={handleWithdraw} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Payoneer Email</label>
+                <input 
+                  type="email" 
+                  required 
+                  value={payoneerEmail} 
+                  onChange={e => setPayoneerEmail(e.target.value)} 
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#00C6A2]" 
+                  placeholder="Enter your Payoneer email address" 
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Amount to Withdraw ($)</label>
+                <input 
+                  type="number" 
+                  required 
+                  min="50"
+                  step="0.01"
+                  max={stats.availableForWithdrawal}
+                  value={withdrawAmount} 
+                  onChange={e => setWithdrawAmount(e.target.value)} 
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#00C6A2]" 
+                  placeholder={`Max: $${stats.availableForWithdrawal}`} 
+                />
+              </div>
+              <button 
+                type="submit" 
+                disabled={withdrawing}
+                className="w-full bg-[#00C6A2] hover:bg-[#00b08f] text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-[#00C6A2]/20 disabled:opacity-50 mt-4"
+              >
+                {withdrawing ? 'Submitting...' : 'Submit Request'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       </div>
     </div>
   );
@@ -242,6 +345,58 @@ function FreelancerGigs() {
             ))}
           </div>
         )}
+
+      {/* Withdraw Modal */}
+      {withdrawModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 md:p-8 w-full max-w-md shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <button onClick={() => setWithdrawModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 dark:hover:text-white bg-gray-100 dark:bg-gray-800 rounded-full p-2">
+              <X size={20} />
+            </button>
+            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
+              <DollarSign size={32} />
+            </div>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Withdraw to Payoneer</h2>
+            <p className="text-gray-500 text-sm mb-6">Available Balance: <strong className="text-[#00C6A2]">${stats.availableForWithdrawal}</strong> (Min: $50)</p>
+            
+            <form onSubmit={handleWithdraw} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Payoneer Email</label>
+                <input 
+                  type="email" 
+                  required 
+                  value={payoneerEmail} 
+                  onChange={e => setPayoneerEmail(e.target.value)} 
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#00C6A2]" 
+                  placeholder="Enter your Payoneer email address" 
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Amount to Withdraw ($)</label>
+                <input 
+                  type="number" 
+                  required 
+                  min="50"
+                  step="0.01"
+                  max={stats.availableForWithdrawal}
+                  value={withdrawAmount} 
+                  onChange={e => setWithdrawAmount(e.target.value)} 
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#00C6A2]" 
+                  placeholder={`Max: $${stats.availableForWithdrawal}`} 
+                />
+              </div>
+              <button 
+                type="submit" 
+                disabled={withdrawing}
+                className="w-full bg-[#00C6A2] hover:bg-[#00b08f] text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-[#00C6A2]/20 disabled:opacity-50 mt-4"
+              >
+                {withdrawing ? 'Submitting...' : 'Submit Request'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       </div>
     </div>
   );
@@ -437,6 +592,12 @@ function FreelancerOrders() {
                       <p className="mt-1 p-2 bg-gray-50 dark:bg-gray-950 rounded border border-gray-100 dark:border-white/5 break-all font-mono">{order.credentials}</p>
                     </div>
                   )}
+                  {order.status === 'revision' && order.revisionNote && (
+                    <div className="mt-3 text-xs bg-orange-50 dark:bg-orange-900/10 p-3 rounded-lg border border-orange-200">
+                      <span className="font-bold text-orange-600 block mb-1">Revision Requested:</span>
+                      <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{order.revisionNote}</p>
+                    </div>
+                  )}
                   {order.deliveryLink && (
                     <div className="mt-3 text-xs bg-[#E6F9F5] dark:bg-[#00C6A2]/10 p-3 rounded-lg border border-[#00C6A2]/20">
                       <span className="font-bold text-[#00C6A2] block mb-1">Final Delivery:</span>
@@ -476,7 +637,7 @@ function FreelancerOrders() {
                   {(!order.status || order.status === 'pending' || order.status === 'requirements') && (
                     <span className="text-[10px] text-orange-600 font-bold bg-orange-50 px-2 py-1.5 rounded-lg text-center border border-orange-100">Waiting for Client Requirements or Admin</span>
                   )}
-                  {order.status === 'processing' && (
+                  {(order.status === 'processing' || order.status === 'revision') && (
                     <button 
                       onClick={() => setDeliveryModal(order)}
                       className="bg-blue-600 text-white font-bold py-2 px-4 rounded-xl hover:bg-blue-700 transition-colors text-xs"
@@ -644,6 +805,58 @@ function FreelancerOrders() {
           </div>
         </div>
       )}
+
+      {/* Withdraw Modal */}
+      {withdrawModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl p-6 md:p-8 w-full max-w-md shadow-2xl relative animate-in fade-in zoom-in duration-200">
+            <button onClick={() => setWithdrawModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-900 dark:hover:text-white bg-gray-100 dark:bg-gray-800 rounded-full p-2">
+              <X size={20} />
+            </button>
+            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl flex items-center justify-center mb-6">
+              <DollarSign size={32} />
+            </div>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-2">Withdraw to Payoneer</h2>
+            <p className="text-gray-500 text-sm mb-6">Available Balance: <strong className="text-[#00C6A2]">${stats.availableForWithdrawal}</strong> (Min: $50)</p>
+            
+            <form onSubmit={handleWithdraw} className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Payoneer Email</label>
+                <input 
+                  type="email" 
+                  required 
+                  value={payoneerEmail} 
+                  onChange={e => setPayoneerEmail(e.target.value)} 
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#00C6A2]" 
+                  placeholder="Enter your Payoneer email address" 
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">Amount to Withdraw ($)</label>
+                <input 
+                  type="number" 
+                  required 
+                  min="50"
+                  step="0.01"
+                  max={stats.availableForWithdrawal}
+                  value={withdrawAmount} 
+                  onChange={e => setWithdrawAmount(e.target.value)} 
+                  className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-white/10 rounded-xl focus:outline-none focus:border-[#00C6A2]" 
+                  placeholder={`Max: $${stats.availableForWithdrawal}`} 
+                />
+              </div>
+              <button 
+                type="submit" 
+                disabled={withdrawing}
+                className="w-full bg-[#00C6A2] hover:bg-[#00b08f] text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-[#00C6A2]/20 disabled:opacity-50 mt-4"
+              >
+                {withdrawing ? 'Submitting...' : 'Submit Request'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       </div>
     </div>
   );
