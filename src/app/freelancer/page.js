@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
-import { collection, query, where, getDocs, deleteDoc, doc, updateDoc, onSnapshot, orderBy, serverTimestamp, addDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, getDoc, deleteDoc, doc, updateDoc, onSnapshot, orderBy, serverTimestamp, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import Link from "next/link";
 import { Plus, Edit2, List, DollarSign, CheckCircle2, Trash2, Video, Inbox, X, Star } from "lucide-react";
@@ -29,8 +29,7 @@ export default function FreelancerDashboard() {
     async function fetchStats() {
       try {
         // Fetch Platform Fee first
-        const { doc, getDoc } = require("firebase/firestore");
-        const settingsSnap = await getDoc(doc(db, "settings", "global"));
+                const settingsSnap = await getDoc(doc(db, "settings", "global"));
         const platformFeePercentage = settingsSnap.exists() ? (Number(settingsSnap.data().platformFee) || 10) : 10;
 
         const gigsQ = query(collection(db, "services"), where("authorId", "==", user.uid));
@@ -292,8 +291,7 @@ function FreelancerOrders() {
     async function fetchOrders() {
       try {
         // Fetch Platform Fee
-        const { getDoc } = require("firebase/firestore");
-        const settingsSnap = await getDoc(doc(db, "settings", "global"));
+                const settingsSnap = await getDoc(doc(db, "settings", "global"));
         if (settingsSnap.exists()) {
           setPlatformFee(Number(settingsSnap.data().platformFee) || 10);
         }
