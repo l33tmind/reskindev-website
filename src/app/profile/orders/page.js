@@ -26,6 +26,9 @@ export default function MyOrders() {
 
   const [revOrder, setRevOrder] = useState(null);
   const [revText, setRevText] = useState("");
+
+  const [cancelModal, setCancelModal] = useState(null);
+  const [canceling, setCanceling] = useState(false);
   const [submittingRev, setSubmittingRev] = useState(false);
 
   useEffect(() => {
@@ -79,6 +82,46 @@ export default function MyOrders() {
       console.error(error);
     }
     setSubmittingReq(false);
+  };
+
+  const submitCancellation = async () => {
+    if (!cancelModal) return;
+    setCanceling(true);
+    try {
+      await updateDoc(doc(db, "orders", cancelModal.id), { 
+        status: "cancel_requested_by_buyer",
+        updatedAt: serverTimestamp()
+      });
+      setOrders(orders.map(o => o.id === cancelModal.id ? { ...o, status: "cancel_requested_by_buyer" } : o));
+      toast.success("Cancellation request sent to seller.");
+      setCancelModal(null);
+    } catch (error) {
+      toast.error("Failed to request cancellation.");
+      console.error(error);
+    }
+    setCanceling(false);
+  };
+
+  const handleAction = async (orderId, actionType) => {
+    try {
+      let newStatus = '';
+      if (actionType === 'decline') newStatus = 'processing';
+      if (actionType === 'accept_cancel') newStatus = 'cancelled';
+      if (actionType === 'admin') newStatus = 'disputed';
+      
+      if (!newStatus) return;
+
+      await updateDoc(doc(db, "orders", orderId), { 
+        status: newStatus,
+        updatedAt: serverTimestamp()
+      });
+      
+      setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+      toast.success("Action completed.");
+    } catch (error) {
+      toast.error("Action failed.");
+      console.error(error);
+    }
   };
 
   const handleRequestRev = async (e) => {
@@ -235,7 +278,7 @@ export default function MyOrders() {
                   )}
 
                   {['processing', 'revision', 'requirements'].includes(order.status) && (
-                    <button onClick={() => { if(confirm('Request Cancellation?')) handleAction(order.id, 'cancel') }} className="bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 font-bold py-2 px-4 rounded-xl text-xs transition-colors">
+                    <button onClick={() => setCancelModal(order)} className="bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 font-bold py-2 px-4 rounded-xl text-xs transition-colors">
                       Cancel Order
                     </button>
                   )}
@@ -391,6 +434,37 @@ export default function MyOrders() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Cancel Order Modal */}
+      {cancelModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-gray-900 w-full max-w-sm rounded-3xl p-6 shadow-2xl border border-gray-200 dark:border-white/10 animate-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 bg-red-100 dark:bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+            </div>
+            <h2 className="text-xl font-black text-center text-gray-900 dark:text-white mb-2">Cancel Order?</h2>
+            <p className="text-gray-500 text-sm text-center mb-6">
+              Are you sure you want to request cancellation for <strong>{cancelModal.gigTitle}</strong>? The seller will need to approve this request.
+            </p>
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setCancelModal(null)} 
+                disabled={canceling}
+                className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition-colors disabled:opacity-50"
+              >
+                Go Back
+              </button>
+              <button 
+                onClick={submitCancellation} 
+                disabled={canceling}
+                className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors disabled:opacity-50 shadow-md"
+              >
+                {canceling ? 'Sending...' : 'Yes, Cancel'}
+              </button>
+            </div>
           </div>
         </div>
       )}
