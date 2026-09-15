@@ -187,9 +187,7 @@ export default function FreelancerEditGig({ params }) {
   if (authLoading || loading) return <div className="p-20 text-center text-gray-500">Loading gig details...</div>;
 
   
-  if (resolvedParams.id === "new") {
-    return <div className="p-20 text-center text-red-500 font-bold">Access Denied. Only admins can create new gigs.</div>;
-  }
+
 
   if (dbUser?.role !== "freelancer") {
     return <div className="p-20 text-center text-red-500 font-bold">Access Denied. Only sellers can edit gigs.</div>;
