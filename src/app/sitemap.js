@@ -1,4 +1,4 @@
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, limit } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export default async function sitemap() {
@@ -7,7 +7,7 @@ export default async function sitemap() {
   // Get dynamic pages (terms, privacy, etc.)
   let pages = [];
   try {
-    const pagesSnap = await getDocs(collection(db, "pages"));
+    const pagesSnap = await getDocs(query(collection(db, "pages"), limit(100)));
     pages = pagesSnap.docs.map(doc => ({
       url: `${baseUrl}/${doc.data().slug}`,
       lastModified: new Date(),
@@ -19,7 +19,7 @@ export default async function sitemap() {
   // Get dynamic gigs
   let gigs = [];
   try {
-    const servicesSnap = await getDocs(collection(db, "services"));
+    const servicesSnap = await getDocs(query(collection(db, "services"), limit(500)));
     gigs = servicesSnap.docs.map(doc => {
       const gig = doc.data();
       const slug = gig.title ? gig.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : '';
